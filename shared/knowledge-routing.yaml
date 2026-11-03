@@ -1,0 +1,175 @@
+# knowledge-routing.yaml — 确定性知识卡加载路由
+# LLM不做调度决策，按模式+阶段自动加载对应知识卡
+# 路径相对于 shared/knowledge/
+
+modules:
+  vuln-hunting:
+    description: "漏洞挖掘模式 — Web应用/API安全审计"
+    phases:
+      recon:
+        - appsec/recon-methodology.md
+        - appsec/info-leak-test.md
+        - appsec/insecure-scm-test.md
+        - appsec/js-reverse-guide.md
+      injection:
+        - appsec/injection-test.md
+        - appsec/el-injection-test.md
+        - appsec/jndi-injection-test.md
+        - appsec/xxe-test.md
+        - appsec/deserialization-test.md
+        - appsec/prototype-pollution-test.md
+        - appsec/type-juggling-test.md
+      auth:
+        - appsec/authbypass-test.md
+        - appsec/idor-test.md
+        - appsec/oauth-jwt-test.md
+        - appsec/csrf-test.md
+      client-side:
+        - appsec/xss-test.md
+        - appsec/open-redirect-test.md
+      file-access:
+        - appsec/path-traversal-lfi-test.md
+        - appsec/file-upload-test.md
+        - appsec/ssrf-test.md
+      logic:
+        - appsec/logic-test.md
+        - appsec/race-condition-test.md
+      advanced:
+        - appsec/http-smuggling-test.md
+        - appsec/http-host-header-test.md
+        - appsec/cache-poisoning-test.md
+        - appsec/websocket-test.md
+        - appsec/graphql-test.md
+        - appsec/api-gateway-test.md
+        - appsec/agent-tool-exec-test.md
+        - appsec/cloud-ide-codex-rce-chain.md
+        - appsec/ghost-bits-cast-test.md
+        - appsec/subdomain-takeover-test.md
+        - appsec/bucket-takeover-test.md
+      bypass:
+        - appsec/waf-bypass.md
+        - appsec/打穿短表.md
+      report: []
+
+  pentest:
+    description: "渗透测试模式 — 从外围到内网的完整渗透链"
+    phases:
+      recon:
+        - appsec/recon-methodology.md
+        - appsec/info-leak-test.md
+        - appsec/insecure-scm-test.md
+        - appsec/js-reverse-guide.md
+        - redteam/recon/windows-workgroup.md
+        - redteam/recon/ad-domain-enum.md
+      web-exploit:
+        - appsec/injection-test.md
+        - appsec/el-injection-test.md
+        - appsec/jndi-injection-test.md
+        - appsec/xxe-test.md
+        - appsec/deserialization-test.md
+        - appsec/file-upload-test.md
+        - appsec/ssrf-test.md
+        - appsec/path-traversal-lfi-test.md
+        - appsec/authbypass-test.md
+        - appsec/idor-test.md
+        - appsec/oauth-jwt-test.md
+      infra-exploit:
+        - redteam/exploit/middleware-java.md
+        - redteam/exploit/crypto-default-keys.md
+        - redteam/cloud/k8s-attack.md
+      privesc:
+        - redteam/privesc/linux.md
+        - redteam/privesc/windows.md
+      lateral:
+        - redteam/lateral/techniques.md
+        - redteam/ad-attack/delegation.md
+        - redteam/ad-attack/ticket.md
+      persist:
+        - redteam/persist/techniques.md
+
+  red-team:
+    description: "红队评估模式 — Kill Chain（外网Web + 内网AD + 云原生K8s）"
+    phases:
+      # 分支A：外网Web红队
+      web-recon:
+        - redteam/exploit/web-rce-vectors.md
+        - appsec/recon-methodology.md
+        - appsec/info-leak-test.md
+        - appsec/js-reverse-guide.md
+        - appsec/bucket-takeover-test.md   # 悬空桶引用=初始访问/供应链向量（§9 red-team用法）
+      web-exploit:
+        - redteam/exploit/web-rce-vectors.md
+        - redteam/exploit/middleware-java.md
+        - redteam/exploit/crypto-default-keys.md
+        - appsec/injection-test.md
+        - appsec/deserialization-test.md
+        - appsec/file-upload-test.md
+        - appsec/ssrf-test.md
+        - appsec/path-traversal-lfi-test.md
+        - appsec/xxe-test.md
+        - appsec/el-injection-test.md
+        - appsec/jndi-injection-test.md
+        - appsec/authbypass-test.md
+        - appsec/oauth-jwt-test.md
+      web-deepen:
+        - appsec/idor-test.md
+        - appsec/waf-bypass.md
+        - appsec/打穿短表.md
+      # 分支B：内网AD红队
+      ad-recon:
+        - redteam/recon/windows-workgroup.md
+        - redteam/recon/ad-domain-enum.md
+      privesc:
+        - redteam/privesc/linux.md
+        - redteam/privesc/windows.md
+      lateral:
+        - redteam/lateral/techniques.md
+        - redteam/ad-attack/delegation.md
+        - redteam/ad-attack/ticket.md
+      persist:
+        - redteam/persist/techniques.md
+      # 分支C：云原生K8s红队
+      k8s:
+        - redteam/cloud/k8s-attack.md
+        - redteam/privesc/linux.md
+      evasion:
+        - arsenal/evasion.md
+        - arsenal/loader-design.md
+        - arsenal/process-injection.md
+
+  arsenal:
+    description: "红队武器模式 — 免杀/Loader/注入开发"
+    phases:
+      build:
+        - arsenal/evasion.md
+        - arsenal/loader-design.md
+        - arsenal/process-injection.md
+      test:
+        - arsenal/evasion.md
+
+# 跨模块加载规则
+cross-loading:
+  red-team.initial-access:
+    from: pentest.web-exploit
+  pentest.lateral:
+    optional:
+      - arsenal/evasion.md
+
+# benchmark专用路由（CTF按题目类别加载）
+# 路径相对于 skills/ 目录（兄弟skill）
+# benchmark-orchestrator/SKILL.md 有自己的 select_knowledge_cards()，此处为参考索引
+benchmark:
+  web:
+    - ../benchmark-orchestrator/knowledge/cve-web-common.md
+    - ../benchmark-orchestrator/knowledge/ctf-web-manual.md
+  reverse:
+    - ../benchmark-orchestrator/knowledge/ctf-reverse.md
+  pwn:
+    - ../benchmark-orchestrator/knowledge/ctf-pwn.md
+  crypto:
+    - ../benchmark-orchestrator/knowledge/ctf-crypto.md
+  misc:
+    - ../benchmark-orchestrator/knowledge/ctf-misc.md
+  conditional:
+    - ../benchmark-orchestrator/knowledge/cve-flask-jwt.md    # flask/jwt
+    - ../benchmark-orchestrator/knowledge/cve-langflow-rce.md # langflow

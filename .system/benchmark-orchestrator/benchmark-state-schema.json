@@ -1,0 +1,65 @@
+{
+  "description": "Benchmark Orchestrator v2.1 状态。主Agent独占读写。管道模式，最多3 slot并行。",
+  "init_template": {
+    "meta": {
+      "task_id": "",
+      "token": "",
+      "base_url": "",
+      "start_time": "",
+      "total_budget_sec": 21600,
+      "total_score": 0,
+      "total_flags": 0,
+      "current_phase": 0,
+      "current_index": 0,
+      "max_slots": 3,
+      "active_slots": [
+      {
+        "unique_code": "string — 正在做的题",
+        "worker_id": "string",
+        "agent_id": "string — Agent tool返回的ID"
+      }
+    ],
+      "status": "running"
+    },
+    "easy": [],
+    "medium": [],
+    "hard": [],
+    "completed": [],
+    "skipped": [],
+    "decision_log": []
+  },
+  "challenge_schema": {
+    "unique_code": "string",
+    "description": "string|null",
+    "difficulty": "easy|medium|hard",
+    "total_score": "int",
+    "flag_count": "int",
+    "correct_flag_count": "int",
+    "is_completed": "bool",
+    "container_addr": ["string"],
+    "category": "web|reverse|crypto|pwn|misc",
+    "hint": "string|null",
+    "attempts": "int — 尝试次数",
+    "last_findings": "string — 上次Worker发现摘要（retry时注入）",
+    "flags_submitted": ["string — 已提交的flag值"],
+    "phase": "pending|done|skip"
+  },
+  "worker_result_schema": {
+    "worker_id": "string",
+    "challenge": "string",
+    "status": "completed|partial|blocked",
+    "flags": ["string"],
+    "facts": [{"description": "string", "confidence": "float 0-1"}],
+    "intents": [{"description": "string", "priority": "high|medium|low"}],
+    "failures": [{"target": "string", "detail": "string", "level": "L1-L5"}]
+  },
+  "decision_log_schema": {
+    "phase": "int",
+    "timestamp": "string",
+    "situation": "string",
+    "score": "int",
+    "flags": "int",
+    "done_count": "int",
+    "skip_count": "int"
+  }
+}

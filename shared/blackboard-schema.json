@@ -1,0 +1,106 @@
+{
+  "$comment": "pentest/vuln-hunting 通用黑板schema",
+  "init_template": {
+    "meta": {
+      "target": "",
+      "cookie": "",
+      "headers": {},
+      "round": 0,
+      "no_finding_streak": 0,
+      "last_finding_round": 0,
+      "owasp_coverage": {
+        "A01": "untested", "A02": "untested", "A03": "untested",
+        "A04": "untested", "A05": "untested", "A06": "untested",
+        "A07": "untested", "A08": "untested", "A09": "untested",
+        "A10": "untested"
+      },
+      "coverage": {},
+      "tools": { "burp": null, "playwright": null },
+      "phase": "breadth",
+      "phase_meanings": {
+        "breadth": "Phase1广度扫描：逐格快速探测，每格≤2次请求",
+        "depth": "Phase2深度攻坚：打blocked/interesting格子，加载bypass知识模块"
+      }
+    },
+    "attack_surfaces": [],
+    "pending_hypotheses": [],
+    "verified_findings": [],
+    "exploits": [],
+    "failure_records": [],
+    "intents": [],
+    "hints": [],
+    "decision_log": []
+  },
+  "schemas": {
+    "attack_surface": {
+      "id": "s-1",
+      "url": "",
+      "method": "GET",
+      "params": [],
+      "type": "api|page|upload|websocket",
+      "status": "unexplored|exploring|explored",
+      "notes": ""
+    },
+    "finding": {
+      "id": "f-1",
+      "type": "vuln|config|info",
+      "severity": "critical|high|medium|low|info",
+      "title": "",
+      "endpoint": "",
+      "description": "",
+      "curl_poc": "",
+      "response_evidence": "",
+      "owasp_category": "A01-A10",
+      "verified": false
+    },
+    "intent": {
+      "id": "i-1",
+      "description": "",
+      "attack_type": "",
+      "target_surfaces": [],
+      "knowledge_modules": [],
+      "priority": "high|medium|low",
+      "status": "pending|claimed|completed|dead",
+      "source_finding": ""
+    },
+    "failure_record": {
+      "target": "",
+      "method": "",
+      "detail": "",
+      "level": "L1|L2|L3|L4|L5",
+      "round": 0
+    },
+    "coverage_entry": {
+      "$comment": "coverage[接口URL][漏洞类型] = {status, note}。两阶段：广度扫描(Phase1)快速探测 → 深度攻坚(Phase2)打blocked/interesting",
+      "example": {
+        "/api/users": {
+          "B_idor": {"status": "tested", "note": ""},
+          "B_unauth": {"status": "pending", "note": ""},
+          "C_sqli": {"status": "blocked", "note": "WAF拦截单引号，返回403"},
+          "D_xss": {"status": "skip", "note": "纯JSON接口无反射点"},
+          "E_ssrf": {"status": "interesting", "note": "url参数存在，返回超时差异"},
+          "J_mass_assign": {"status": "finding", "note": "f-3"}
+        }
+      },
+      "states": "pending|tested|finding|blocked|interesting|parked|skip",
+      "state_meanings": {
+        "pending": "未测试",
+        "tested": "已测试，无发现",
+        "finding": "已确认漏洞，关联finding id",
+        "blocked": "被WAF/过滤/鉴权阻断，需Phase2 bypass",
+        "interesting": "有迹象值得深入（异常响应/时间差异/报错泄露），需Phase2深挖",
+        "parked": "Phase2尝试后仍无突破，归档",
+        "skip": "不适用（如纯JSON接口不测XSS反射）"
+      }
+    },
+    "decision_log_entry": {
+      "round": 0,
+      "timestamp": "",
+      "situation": "",
+      "strategy": "",
+      "next_actions": [],
+      "dead_ends": [],
+      "open_hypotheses": []
+    }
+  }
+}

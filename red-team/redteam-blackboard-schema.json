@@ -1,0 +1,129 @@
+{
+  "description": "红队评估全局状态黑板。主Agent独占读写。目标驱动+阶段制Kill Chain。",
+  "init_template": {
+    "meta": {
+      "target_scope": "",
+      "roe": "",
+      "current_stage": "recon",
+      "start_time": "",
+      "total_rounds": 0,
+      "no_progress_streak": 0,
+      "branch": "web|ad|chained"
+    },
+    "objectives": [],
+    "assets": [],
+    "credentials": [],
+    "network": [],
+    "attack_path": [],
+    "intents": [],
+    "findings": [],
+    "scoreboard": [],
+    "failure_records": [],
+    "persistence_points": [],
+    "decision_log": [],
+    "source_intel": []
+  },
+  "objective_schema": {
+    "id": "string — obj-{seq}",
+    "category": "target|server_control|admin_panel|db_access|sensitive_data|centralised_system|intranet_host|intranet_data|attack_chain|zero_day|supply_chain",
+    "description": "string — 具体目标描述",
+    "branch": "web|ad|both",
+    "weight": "critical|high|medium|bonus",
+    "completion_criteria": "string — 达成条件",
+    "evidence_required": "string — 需采集的证据",
+    "status": "pending|in_progress|achieved|blocked",
+    "achieved_round": "int|null",
+    "evidence_ref": "string|null — 证据描述/截图路径",
+    "notes": "string|null"
+  },
+  "network_schema": {
+    "id": "string — n-{seq}",
+    "cidr": "string — 网段",
+    "scanned": "bool",
+    "alive_hosts": "int|null",
+    "notes": "string"
+  },
+  "source_intel_schema": {
+    "id": "string — src-{seq}",
+    "target_system": "string — 靶标/目标系统名称",
+    "tech_stack": "string — 识别到的技术栈",
+    "source_type": "github|gitee|git_leak|backup_leak|heapdump|js_reverse|paid|trial|other",
+    "source_url": "string|null",
+    "local_path": "string|null — 下载后本地路径",
+    "audit_status": "not_started|in_progress|done",
+    "findings_ref": ["string — finding id列表"],
+    "notes": "string|null"
+  },
+  "asset_schema": {
+    "id": "string — a-{seq}",
+    "hostname": "string",
+    "ip": "string",
+    "os": "string — Windows/Linux/未知",
+    "role": "web|workstation|server|dc|firewall|unknown",
+    "access_level": "none|user|admin|system|domain_admin",
+    "domain_joined": "bool",
+    "domain_name": "string|null",
+    "discovered_round": "int",
+    "notes": "string"
+  },
+  "credential_schema": {
+    "id": "string — c-{seq}",
+    "type": "password|ntlm|aes256|ticket|token|ssh_key|certificate",
+    "username": "string",
+    "domain": "string|null",
+    "value": "string — hash/密码/ticket路径",
+    "source_asset": "string — asset id",
+    "source_method": "string — mimikatz/hashdump/keylog/phish/kerberoast",
+    "valid": "bool",
+    "tested_on": ["string — asset id列表"],
+    "admin_on": ["string — 确认有管理员权限的asset id"]
+  },
+  "attack_path_schema": {
+    "from": "string — asset id 或 'external'",
+    "to": "string — asset id",
+    "method": "string — 使用的技术/CVE/凭证",
+    "stage": "string — Kill Chain阶段",
+    "round": "int",
+    "credential_used": "string|null — credential id"
+  },
+  "intent_schema": {
+    "id": "string — i-{seq}",
+    "description": "string",
+    "target_asset": "string — asset id",
+    "stage": "string — Kill Chain阶段",
+    "priority": "high|medium|low",
+    "status": "pending|in_progress|completed|failed",
+    "from_facts": ["string"],
+    "result": "string|null"
+  },
+  "persistence_schema": {
+    "id": "string — p-{seq}",
+    "asset": "string — asset id",
+    "method": "string — service/schtask/registry/wmi/ssh_key/cron",
+    "detail": "string — 具体配置（服务名/任务名/键值路径）",
+    "cleanup_cmd": "string — 清理命令",
+    "verified": "bool"
+  },
+  "decision_log_schema": {
+    "round": "int",
+    "timestamp": "string",
+    "stage": "string — 当前Kill Chain阶段",
+    "situation": "string — 态势一句话",
+    "strategy": "string — 本轮策略",
+    "assets_controlled": "int",
+    "creds_available": "int",
+    "score_status": "string — 当前得分概况（如：域控已拿/核心库未达/主机×5）",
+    "next_actions": ["string"],
+    "opsec_notes": "string|null"
+  },
+  "scoreboard_schema": {
+    "id": "string — s-{seq}",
+    "objective_ref": "string — objective id",
+    "category": "target|server_control|admin_panel|db_access|sensitive_data|centralised_system|intranet_host|intranet_data|attack_chain|zero_day|supply_chain",
+    "weight": "critical|high|medium|bonus",
+    "asset": "string|null — 关联的asset id",
+    "evidence": "string — 证据描述（截图路径/命令输出摘要）",
+    "submitted": "bool — 是否已提交给裁判",
+    "round": "int"
+  }
+}
