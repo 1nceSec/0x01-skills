@@ -1,8 +1,7 @@
 ---
 name: report-generator
-description: >
-  渗透测试报告自动生成器。汇总当前会话所有已确认漏洞、PoC、攻击链，
-  按标准格式输出完整SRC报告。支持增量更新和多格式输出。
+description: 写报告/生成报告/出报告/report/渗透报告/漏洞报告：汇总会话内已确认漏洞、PoC、攻击链，按 SRC 标准格式输出完整报告；支持增量更新与多格式输出（docx/pdf/md）。
+when_to_use: 写报告/生成报告/出报告/report/渗透报告/漏洞报告
 triggers:
   - 写报告
   - 生成报告
@@ -15,6 +14,7 @@ inputs_optional:
   - format: 输出格式（markdown/html，默认markdown）
   - scope: 报告范围（full/incremental）
 ---
+> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
 
 # 渗透测试报告生成器
 

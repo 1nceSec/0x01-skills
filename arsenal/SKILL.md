@@ -1,9 +1,8 @@
 ---
 name: arsenal
 version: 1.0
-description: >
-  红队武器开发skill：免杀Loader/进程注入/C2/WebShell等武器构建。
-  不是测试目标，而是构建攻击工具。输出完整可编译代码。
+description: 免杀/Loader/shellcode/进程注入/C2/Webshell 武器开发（evasion/bypass）：构建攻击工具、输出完整可编译代码，非对目标测试。红队武器库建设场景使用。
+when_to_use: 免杀/Loader/shellcode/进程注入/武器开发/evasion/bypass/C2/webshell
 triggers:
   - 免杀
   - Loader
@@ -21,6 +20,7 @@ inputs_optional:
   - shellcode_source: Shellcode来源（如"CS raw / MSF / custom"）
   - constraints: 约束条件（如"不能用VirtualAlloc/必须<100KB/纯C"）
 ---
+> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
 
 # 红队武器开发 Skill v1.0
 

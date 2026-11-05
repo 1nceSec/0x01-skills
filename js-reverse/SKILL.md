@@ -1,6 +1,7 @@
 ---
 name: js-reverse
-description: JS逆向分析工具。连接Edge/Chrome浏览器进行断点调试、函数Hook、网络请求追踪、调用链分析、混淆还原。需要JS逆向、前端加密参数分析、签名算法定位时自动调用。
+description: JS逆向/前端加密/加密参数/sign参数/签名算法/参数加密/逆向分析/hook函数/反调试/webpack逆向：连接 Edge/Chrome 断点调试、函数 Hook、网络请求追踪、调用链分析、混淆还原。
+when_to_use: JS逆向/前端加密/加密参数/sign参数/signature/签名算法/参数加密/逆向分析/hook函数/反调试/webpack逆向
 triggers:
   - JS逆向
   - 前端加密
@@ -14,6 +15,7 @@ triggers:
   - 反调试
   - webpack逆向
 ---
+> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
 
 # JS逆向分析引擎（JSReverser-MCP）
 

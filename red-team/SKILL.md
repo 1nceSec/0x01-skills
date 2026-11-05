@@ -1,13 +1,8 @@
 ---
 name: red-team
 version: 2.1
-description: >
-  红队评估skill：Kill Chain三路径（外网Web RCE + 内网AD域控 + 云原生K8s）。
-  Web分支按RCE向量优先级表驱动，含悬空桶接管（初始访问/供应链向量）；
-  K8s分支：管理面暴露→偷token→Pod立足→特权逃逸→宿主机→横向。
-  目标=RCE/数据/权限，不做覆盖测试。
-  主Agent做战术决策+阶段推进，Worker做具体攻击执行。
-  Playbooks拆分方法论 + redteam-state.mjs管状态 + 黑板持久化。
+description: 红队评估/红队/攻防演练/red team/红蓝对抗：Kill Chain 三路径（外网Web RCE+内网AD域控+云原生K8s）；Web按RCE向量优先级表驱动、含悬空桶接管；K8s：管理面暴露→偷token→Pod立足→特权逃逸→横向；主Agent战术决策+Worker执行。
+when_to_use: 红队评估/红队/攻防演练/red team/红蓝对抗
 triggers:
   - 红队评估
   - 红队
@@ -22,6 +17,7 @@ inputs_optional:
   - credentials: 已获取的凭证列表
   - rules_of_engagement: 行动规则（禁止操作/时间窗口/告警阈值）
 ---
+> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
 
 # 红队评估 Skill v2.1 — Kill Chain 阶段制编排器
 

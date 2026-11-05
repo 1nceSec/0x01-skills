@@ -1,10 +1,8 @@
 ---
 name: vuln-hunting
 version: 8.1
-description: >
-  漏洞挖掘/SRC skill：深度优先，ROI驱动，链式升级。
-  主Agent深度推理 + 保守spawn Worker。
-  Playbooks拆分方法论 + pentest-state.mjs管状态 + 黑板持久化。
+description: SRC/挖洞/漏洞挖掘/bug bounty/接口测试/web安全：深度优先、ROI 驱动、链式升级；主 Agent 深度推理+保守 spawn Worker；Playbooks 方法论+pentest-state.mjs 状态+黑板持久化。
+when_to_use: SRC/挖洞/漏洞挖掘/bug bounty/接口测试/web安全
 triggers:
   - SRC
   - 挖洞
@@ -19,6 +17,7 @@ inputs_optional:
   - cookie_b: 第二账号 Cookie（IDOR差分）
   - scope_notes: 业务备注、禁测路径
 ---
+> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
 
 # 漏洞挖掘 Skill v8.1 — SRC深度模式编排器
 

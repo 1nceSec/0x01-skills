@@ -1,10 +1,8 @@
 ---
 name: auto-handoff
 version: 1.0
-description: >
-  自动交接文档生成。上下文即将满时或用户说"交接"时触发。
-  将当前会话状态写入结构化交接文档，提醒用户切换新会话后用 resume 恢复。
-  适用于任何长对话场景（渗透测试、代码开发、调研分析等）。
+description: 自动交接（handoff/写交接）：上下文快满了（context full）或用户说"交接"时触发——将当前会话状态写入结构化交接文档，提醒切换新会话后 resume 恢复；适用于渗透测试/开发/调研等任何长对话场景。
+when_to_use: 交接/handoff/写交接/上下文快满了/context full
 triggers:
   - 交接
   - handoff
@@ -12,6 +10,7 @@ triggers:
   - 上下文快满了
   - context full
 ---
+> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
 
 # 自动交接 Skill v1.0
 

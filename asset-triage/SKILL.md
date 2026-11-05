@@ -1,10 +1,8 @@
 ---
 name: asset-triage
 version: 1.0
-description: >
-  薄弱资产识别与精判。输入资产表（SRC⑥大表/指纹表/URL清单），
-  经指纹识别→信号粗筛→主动验证→AI精判，输出P0-P3打点清单。
-  漏洞挖掘和红队评估的公共前置阶段。
+description: 薄弱资产识别/资产精判/资产筛选/打点清单（asset triage）：输入资产表（SRC⑥大表/指纹表/URL清单），指纹识别→信号粗筛→主动验证→AI精判，输出 P0–P3 打点清单；漏洞挖掘与红队评估的公共前置阶段。
+when_to_use: 薄弱资产/资产精判/资产筛选/asset triage/打点
 triggers:
   - 薄弱资产
   - 资产精判
@@ -16,6 +14,7 @@ inputs_required:
 inputs_optional:
   - name: 项目名称（用于输出文件命名，默认'目标'）
 ---
+> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
 
 # 薄弱资产识别 Skill v1.0
 
