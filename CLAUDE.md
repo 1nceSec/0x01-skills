@@ -73,7 +73,7 @@
 - 账号锁定策略信息泄露（错误次数/阈值提示）
 - 后台/监控面板暴露但无法登录或未返回任何数据
 
-### 2.8 SFSRC 安全测试规范（AGENTS.md 引用）
+### 2.8 安全测试规范（AGENTS.md 引用）
 
 > **权威文件**：`E:\Agent\Claude\AGENTS.md`（v1.0, 2026-10-15）
 > **适用场景**：渗透测试（pentest-ai-driven）、漏洞挖掘（vuln-hunting）、红队评估（red-team）
