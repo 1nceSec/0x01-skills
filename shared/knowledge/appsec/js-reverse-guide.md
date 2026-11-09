@@ -15,7 +15,7 @@
 
 ### 1. 查看网络请求
 
-使用 js-reverse MCP 工具（浏览器已打开目标页面时）：
+使用 audit-js-reverse MCP 工具（浏览器已打开目标页面时）：
 
 ```
 操作: list_network_requests()

@@ -1,4 +1,4 @@
-# 共享数据表（pentest-ai-driven / vuln-hunting 通用）
+# 共享数据表（core-pentest-flow / web-vuln-hunting 通用）
 
 ## 🔧 可用工具
 
@@ -58,7 +58,7 @@
 | 返回401/403 | 先分清：登录页→找业务面；API 403→现场打path/method/头 |
 | 公网Redis/rsync/FPM/AJP | `info-leak-test.md` + `ssrf-test.md` |
 
-> 知识模块路径：`.claude/skills/shared/knowledge/appsec/`。更多：`recon-methodology.md`、`js-reverse-guide.md`、`ghost-bits-cast-test.md`、`打穿短表.md`
+> 知识模块路径：`.claude/skills/shared/knowledge/appsec/`。更多：`recon-methodology.md`、`audit-js-reverse-guide.md`、`ghost-bits-cast-test.md`、`打穿短表.md`
 
 ## 🔑 打穿短表精华（认A打B）
 
@@ -95,24 +95,24 @@
 
 | 类别 | Skill | 说明 |
 |------|-------|------|
-| **安全测试** | `pentest-ai-driven` | OWASP系统化渗透，主力skill，含26个脚本 |
-| | `vuln-hunting` | SRC漏洞挖掘，ROI驱动，深度优先 |
+| **安全测试** | `core-pentest-flow` | OWASP系统化渗透，主力skill，含26个脚本 |
+| | `web-vuln-hunting` | SRC漏洞挖掘，ROI驱动，深度优先 |
 | | `red-team` | 红队Kill Chain（Web RCE + AD域控） |
 | | `code-audit` | 白盒代码审计 |
 | | `mobile-pentest` | 移动端APK/IPA测试 |
-| **安全工具** | `arsenal` | 红队武器（免杀/Shellcode/WebShell/C2） |
-| | `antidebug-breaker-skills` | 反调试/浏览器hook调试辅助 |
-| | `js-reverse` | JS逆向分析 |
+| **安全工具** | `redteam-arsenal` | 红队武器（免杀/Shellcode/WebShell/C2） |
+| | `shared-antidebug-breaker` | 反调试/浏览器hook调试辅助 |
+| | `audit-js-reverse` | JS逆向分析 |
 | | `api-recon` | API接口收集，含6个脚本 |
-| **资产管理** | `src-asset-recon` | SRC资产收集工具包 |
-| | `asset-triage` | 薄弱资产精判/打点筛选 |
+| **资产管理** | `recon-src-asset` | SRC资产收集工具包 |
+| | `recon-asset-triage` | 薄弱资产精判/打点筛选 |
 | **CTF/靶场** | `benchmark-orchestrator` | 腾讯Benchmark靶场管道调度 |
 | **基础设施** | `shared` | 知识库（49篇）+ 数据表 + 状态管理 |
-| | `auto-handoff` | 自动交接文档生成 |
+| | `core-auto-handoff` | 自动交接文档生成 |
 | | `report-generator` | 渗透测试报告生成 |
-| | `playwright-cli` | 浏览器自动化操作 |
+| | `shared-playwright-cli` | 浏览器自动化操作 |
 
-## 🔧 pentest-ai-driven 脚本索引
+## 🔧 core-pentest-flow 脚本索引
 
 | 功能 | 脚本 | 用途 |
 |------|------|------|
@@ -146,17 +146,17 @@
 | | `memory.py` | 状态记忆 |
 | | `run_all.py` | 批量运行入口 |
 
-## 🗂️ 知识库索引（arsenal + redteam）
+## 🗂️ 知识库索引（redteam-arsenal + redteam）
 
 > appsec（34篇）已由上方"进站短表"索引，此处不重复。
 
-### arsenal（红队武器）
+### redteam-arsenal（红队武器）
 
 | 模块 | 路径 |
 |------|------|
-| 免杀/规避技术 | `arsenal/evasion.md` |
-| Loader设计 | `arsenal/loader-design.md` |
-| 进程注入 | `arsenal/process-injection.md` |
+| 免杀/规避技术 | `redteam-arsenal/evasion.md` |
+| Loader设计 | `redteam-arsenal/loader-design.md` |
+| 进程注入 | `redteam-arsenal/process-injection.md` |
 
 ### redteam（红队攻击链）
 

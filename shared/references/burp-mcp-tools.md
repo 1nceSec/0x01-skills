@@ -1,6 +1,6 @@
 # Burp MCP 工具速查
 
-> pentest/vuln-hunting 按需 Read 本文件。Burp MCP 连接失败时退化为 curl。
+> pentest/web-vuln-hunting 按需 Read 本文件。Burp MCP 连接失败时退化为 curl。
 
 ## 工具映射
 

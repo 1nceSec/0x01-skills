@@ -33,7 +33,7 @@ grep -r "new WebSocket" *.js
 grep -r "ws://" *.js
 grep -r "wss://" *.js
 
-# 从网络请求中查找（使用 js-reverse MCP）
+# 从网络请求中查找（使用 audit-js-reverse MCP）
 list_network_requests()
 # 查找 Upgrade: websocket 的请求
 ```
@@ -350,10 +350,10 @@ def monitor_ws_messages(ws_url, token):
     ws.close()
 ```
 
-### 6.2 使用 js-reverse MCP 分析
+### 6.2 使用 audit-js-reverse MCP 分析
 
 ```python
-# 使用 js-reverse MCP 的 get_websocket_messages
+# 使用 audit-js-reverse MCP 的 get_websocket_messages
 # 获取所有 WebSocket 消息
 
 # 1. 打开目标页面

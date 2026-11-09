@@ -5,7 +5,7 @@
 
 ## 0-A: 工具与账号确认（针对明确Web资产开测前执行，不得跳过）
 
-> 触发时机：已确定具体Web测试目标后。资产收集（src-asset-recon）和精判（asset-triage）阶段不触发此确认。
+> 触发时机：已确定具体Web测试目标后。资产收集（recon-src-asset）和精判（recon-asset-triage）阶段不触发此确认。
 
 **必须**使用 `AskUserQuestion` 依次确认三个问题：
 
@@ -51,7 +51,7 @@ AskUserQuestion({
 2. `proxy_history`/`sitemap_query` 提取全部请求头（Host/Cookie/Token/UA/Accept/Origin/Referer一个不少）存基线
 3. curl首页 + robots.txt + 常规敏感路径（/swagger /api-docs /actuator /graphql /console /druid）
 4. **敏感文件深度枚举**：onescan扫到敏感目录（/files/ /upload/ /backup/等）后，必须做二级枚举（站名缩写+常见后缀）。参见 `info-leak-test.md` §2.0.1
-5. JS审计：**全量下载主bundle + 所有chunk分包**（从HTML入口和主bundle提取chunk引用），提取API路径/路由配置/硬编码凭证/加密逻辑/盐/公钥。**发现加密调用后必须追踪密钥来源**（硬编码/环境变量/后端下发），完成完整加密链路分析。混淆JS/加密参数 → `Skill("js-reverse")`。详见 `js_audit_guide.md` §6.0
+5. JS审计：**全量下载主bundle + 所有chunk分包**（从HTML入口和主bundle提取chunk引用），提取API路径/路由配置/硬编码凭证/加密逻辑/盐/公钥。**发现加密调用后必须追踪密钥来源**（硬编码/环境变量/后端下发），完成完整加密链路分析。混淆JS/加密参数 → `Skill("audit-js-reverse")`。详见 `js_audit_guide.md` §6.0
 6. 进站短表对照：Read `shared/common-tables.md`，标记需加载的知识模块
 
 ### 0-B.1: 多租户SaaS平台弱口令策略

@@ -19,7 +19,7 @@ inputs_optional:
   - mode: standalone / pentest / src（默认standalone）
   - target_url: 活目标URL（有则实际验证）
 ---
-> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
+> 开工前先跑 core-pentest-flow Phase 0-0 自检。
 
 # 白盒代码审计
 
@@ -43,8 +43,8 @@ inputs_optional:
    - 框架特征: Spring注解、Express路由、Django settings、Laravel配置
 3. **审计模式确认**（AskUserQuestion选项）:
    - `standalone` — 纯代码审计，独立出报告
-   - `pentest` — 配合pentest-ai-driven，输出验证清单注入测试队列
-   - `src` — 配合vuln-hunting，聚焦高价值可利用漏洞
+   - `pentest` — 配合core-pentest-flow，输出验证清单注入测试队列
+   - `src` — 配合web-vuln-hunting，聚焦高价值可利用漏洞
 4. **活目标确认** — 有URL则Phase 4实际验证，无则给验证方案
 5. **工具确认** — 有活目标时按CLAUDE.md§1.6确认Burp/Playwright
 6. **范围确认**:
@@ -278,7 +278,7 @@ Java 17 / Spring Boot 3.x / MyBatis / MySQL
 | 2 | SQLi | POST /api/search | keyword | ' AND 1=1-- | 返回差异 | 待验证 |
 ```
 
-此清单可直接被pentest-ai-driven / vuln-hunting读取并注入测试队列。
+此清单可直接被core-pentest-flow / web-vuln-hunting读取并注入测试队列。
 
 ---
 
@@ -288,7 +288,7 @@ Java 17 / Spring Boot 3.x / MyBatis / MySQL
 |------|---------|
 | pentest中发现源码泄露 | pentest → 调用code-audit → 返回验证清单 → pentest继续打 |
 | red-team需要Web突破 | red-team stages.md W1 → 调用code-audit → 产出RCE/后台权限线索 |
-| vuln-hunting需要深度审计 | vuln-hunting → 调用code-audit → 聚焦高价值链 |
+| web-vuln-hunting需要深度审计 | web-vuln-hunting → 调用code-audit → 聚焦高价值链 |
 | 独立审计 | 直接出`_findings.md`报告 |
 
 ---
@@ -310,4 +310,4 @@ Java 17 / Spring Boot 3.x / MyBatis / MySQL
 
 ## 跨Session交接
 
-审计中断时触发`auto-handoff`。恢复时读取`_audit_context.md`和`_findings.md`继续。
+审计中断时触发`core-auto-handoff`。恢复时读取`_audit_context.md`和`_findings.md`继续。

@@ -516,4 +516,4 @@ Look for:
 
 - If hidden fields affect privilege: [api authorization and bola](idor-test.md)
 - If GraphQL batching changes auth or rate behavior: [api auth and jwt abuse](oauth-jwt-test.md)
-- If endpoint discovery is incomplete: see `recon-methodology.md` and JS reverse (`js-reverse-guide.md`)
+- If endpoint discovery is incomplete: see `recon-methodology.md` and JS reverse (`audit-js-reverse-guide.md`)

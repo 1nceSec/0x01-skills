@@ -17,7 +17,7 @@ inputs_optional:
   - credentials: 已获取的凭证列表
   - rules_of_engagement: 行动规则（禁止操作/时间窗口/告警阈值）
 ---
-> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
+> 开工前先跑 core-pentest-flow Phase 0-0 自检。
 
 # 红队评估 Skill v2.1 — Kill Chain 阶段制编排器
 
@@ -28,9 +28,9 @@ inputs_optional:
 
 | 输入类型 | 判断依据 | 执行路径 |
 |---|---|---|
-| **SRC链接/组织名** | URL含SRC/安全应急特征，或纯文本组织名 | → `Skill("src-asset-recon")` → `Skill("asset-triage")` → P0目标作为Stage 2突破口 → Phase 0-A |
-| **原始资产表** | 用户提供域名/IP/指纹表等未经精判的资产列表 | → `Skill("asset-triage")` → P0目标作为Stage 2突破口 → Phase 0-A |
-| **脆弱资产表/打点清单** | 用户说"从打点清单继续"或提供asset-triage产出/已标注P0-P3的资产 | → P0目标作为Stage 2突破口 → Phase 0-A |
+| **SRC链接/组织名** | URL含SRC/安全应急特征，或纯文本组织名 | → `Skill("recon-src-asset")` → `Skill("recon-asset-triage")` → P0目标作为Stage 2突破口 → Phase 0-A |
+| **原始资产表** | 用户提供域名/IP/指纹表等未经精判的资产列表 | → `Skill("recon-asset-triage")` → P0目标作为Stage 2突破口 → Phase 0-A |
+| **脆弱资产表/打点清单** | 用户说"从打点清单继续"或提供recon-asset-triage产出/已标注P0-P3的资产 | → P0目标作为Stage 2突破口 → Phase 0-A |
 | **指定目标** | IP/CIDR/域名/已有立足点 | → 直接 Phase 0-A |
 
 ## Phase 0-A: 工具确认（必须首先执行，不得跳过）
@@ -88,12 +88,12 @@ AskUserQuestion({
 
 | 阶段 | 加载文件 | 触发条件 |
 |------|----------|----------|
-| 资产收集 | `Skill("src-asset-recon")` | Phase 0-0输入为SRC链接/组织名时触发 |
-| 薄弱资产精判 | `Skill("asset-triage")` | 资产收集完成后触发 |
+| 资产收集 | `Skill("recon-src-asset")` | Phase 0-0输入为SRC链接/组织名时触发 |
+| 薄弱资产精判 | `Skill("recon-asset-triage")` | 资产收集完成后触发 |
 | Bootstrap | `shared/playbooks/bootstrap.md` | 任务启动，Read一次（黑板用redteam-blackboard.json） |
 | Kill Chain循环 | `playbooks/stages.md` | 每轮循环Read（三路径：Web W1-W4 / AD A1-A5 / K8s K1-K4 + 目标体系 + Reason-Act + OPSEC + 方向切换） |
 | 源码审计委托 | `Skill("code-audit")` | W1识别到可获取源码的框架/CMS/商业系统时触发，产出进findings作为W2 Tier 0 |
-| Web突破委托 | `Skill("pentest-ai-driven")` | W2止损后或 `redteam-state.mjs path next` 返回 `delegate_pentest` 时触发，pentest只找入口（RCE/权限/数据），产出进findings |
+| Web突破委托 | `Skill("core-pentest-flow")` | W2止损后或 `redteam-state.mjs path next` 返回 `delegate_pentest` 时触发，pentest只找入口（RCE/权限/数据），产出进findings |
 | 桶接管向量 | `shared/knowledge/appsec/bucket-takeover-test.md` §9 | W1侦察发现OSS/COS/S3等云存储引用时按悬空桶检查（初始访问/供应链向量） |
 | K8s知识卡 | `shared/knowledge/redteam/cloud/k8s-attack.md` | K1-K4各阶段加载（入口向量/逃逸检查表/收割清单/横向） |
 | 攻击链管理 | `shared/playbooks/chain.md` | 发现可串联漏洞 / `chain next`返回非空 |
@@ -160,5 +160,5 @@ OPSEC优先 | 凭证立即入库 | 高危操作先确认
 单向量≤5种bypass无突破→parked | 3轮无进展→方向切换
 Worker发现一律pending | findings只有主Agent能写
 每轮评估：阶段/目标达成/凭证/得分/下一步ROI/OPSEC风险
-L3被拦×3→升级L5请求协助 | 跨session用auto-handoff
+L3被拦×3→升级L5请求协助 | 跨session用core-auto-handoff
 ```

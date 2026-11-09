@@ -75,7 +75,7 @@
 
 **pentest委托**（红队专用快速模式）：
 - 触发：`redteam-state.mjs path next` 返回 `delegate_pentest` 时，或手工判断需要系统化覆盖测试
-- 调用：`Skill("pentest-ai-driven")`，传入目标URL+已有Cookie/Token
+- 调用：`Skill("core-pentest-flow")`，传入目标URL+已有Cookie/Token
 - 约束：pentest只负责找入口（RCE/权限/数据），不做完整覆盖测试
 - 返回：confirmed findings列表（漏洞类型+PoC+可利用性评估）
 - 红队消费结果：取RCE/权限类finding → 进W3深入利用；取数据类finding → 进W4目标达成

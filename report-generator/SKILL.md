@@ -14,7 +14,7 @@ inputs_optional:
   - format: 输出格式（markdown/html，默认markdown）
   - scope: 报告范围（full/incremental）
 ---
-> 开工前先跑 pentest-ai-driven Phase 0-0 自检。
+> 开工前先跑 core-pentest-flow Phase 0-0 自检。
 
 # 渗透测试报告生成器
 
