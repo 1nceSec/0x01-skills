@@ -162,3 +162,6 @@ Worker发现一律pending | findings只有主Agent能写
 每轮评估：阶段/目标达成/凭证/得分/下一步ROI/OPSEC风险
 L3被拦×3→升级L5请求协助 | 跨session用core-auto-handoff
 ```
+
+## 安全边界
+遵循 AGENTS.md（权威规则）+ shared/references/safety-boundaries.md。Worker prompt 必须逐条写入安全约束。

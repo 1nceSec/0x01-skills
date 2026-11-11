@@ -1,5 +1,6 @@
 ---
 name: code-audit
+version: 1.0
 description: 代码审计/白盒审计/源码审计（code audit/source code review/审计源码）：攻击者视角，拿到源码→建攻击面模型与信任边界→定向猎杀→出 PoC；每个 finding 必须有 PoC 或完整验证方案，不报"疑似"；支持独立审计/配合渗透测试(pentest)/配合 SRC 三种模式。
 when_to_use: 代码审计/白盒审计/源码审计/code audit/白盒测试/source code review/审计代码/审计源码
 triggers:

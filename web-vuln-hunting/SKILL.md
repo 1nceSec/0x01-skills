@@ -216,3 +216,6 @@ Worker发现一律进pending | verified只有主Agent能写
 每轮开头必答态势三问 | 每次curl后Auto Fact提取 | 跨session用core-auto-handoff
 每个发现发Repeater: VULN{n}-{类型}-{简述}
 ```
+
+## 安全边界
+遵循 AGENTS.md（权威规则）+ shared/references/safety-boundaries.md。Worker prompt 必须逐条写入安全约束。
