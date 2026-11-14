@@ -33,9 +33,8 @@ grep -r "new WebSocket" *.js
 grep -r "ws://" *.js
 grep -r "wss://" *.js
 
-# 从网络请求中查找（使用 audit-js-reverse MCP）
-list_network_requests()
-# 查找 Upgrade: websocket 的请求
+# 从网络请求中查找（DevTools Network 面板筛选 WS）
+# 或 playwright-cli attach 后查看 Upgrade: websocket 的请求
 ```
 
 ---
@@ -350,16 +349,13 @@ def monitor_ws_messages(ws_url, token):
     ws.close()
 ```
 
-### 6.2 使用 audit-js-reverse MCP 分析
+### 6.2 浏览器侧 WS 消息分析（DevTools / playwright-cli）
 
-```python
-# 使用 audit-js-reverse MCP 的 get_websocket_messages
-# 获取所有 WebSocket 消息
-
-# 1. 打开目标页面
-# 2. 触发 WebSocket 连接
-# 3. 调用 get_websocket_messages()
-# 4. 分析消息内容
+```
+# DevTools 手动路径：
+# 1. 打开目标页面 → Network 面板 → WS 筛选
+# 2. 触发 WebSocket 连接，点击 WS 请求 → Messages 标签页
+# 3. 查看全量帧（绿色=发往服务端，白色=服务端下发），分析消息内容与序列
 ```
 
 ---

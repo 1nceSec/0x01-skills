@@ -1,4 +1,4 @@
-# 共享数据表（core-pentest-flow / web-vuln-hunting 通用）
+# 共享数据表（pentest-flow / vuln-hunting 通用）
 
 ## 🔧 可用工具
 
@@ -16,7 +16,7 @@
 - `onescan.py` — 常规敏感路径扫描
 - `recon.py` — 侦察辅助
 
-**知识库**：`.claude/skills/shared/knowledge/appsec/` 目录下34个漏洞类型模块，按需加载。
+**知识库**：`E:/Agent/0x01_Skills/shared/knowledge/appsec/` 目录下34个漏洞类型模块，按需加载。
 
 ## 📋 进站短表（特征→模块映射）
 
@@ -55,10 +55,15 @@
 | 入驻/招商H5 | `idor-test.md` |
 | 多租户SaaS平台（共用登录入口） | `authbypass-test.md` + `idor-test.md`（机构缩写字典+用户枚举+申请多权限账号） |
 | 登录页直接有账密框但提交走SSO/统一认证（未收敛SSO壳） | `authbypass-test.md`（SSO下第二套隐藏登录口+JWT控制台注入接管） |
-| 返回401/403 | 先分清：登录页→找业务面；API 403→现场打path/method/头 |
+| 列表/查询接口请求字段少、返回字段多 | `param-asymmetry-fuzz.md`（字段回拼→隐藏参数→ORDER BY注入） |
+| 已知部分接口路径需扩面（list→add/save/delete；upload→uploadImage） | `param-asymmetry-fuzz.md`（联想fuzz+框架字典+404差异+权限绕过变体） |
+| 微信小程序（jscode2session / session_key / encryptedData / iv） | `wx-miniprogram-sessionkey-test.md`（三要素伪造手机号任意登录+app.json路由绕过） |
+| 有抽奖/答题/盲盒/内置游戏/签到积分 | `logic-test.md` §九（结果参数重置）+ `race-condition-test.md` |
+| 有优惠券/会员充值/付费解锁/二维码 | `logic-test.md` §七/§八/§十一（券细分+支付细节+二维码攻击面） |
+| 返回401/403 | 先分清：登录页→找业务面；API 403→现场打path/method/头（`param-asymmetry-fuzz.md` §三变体清单） |
 | 公网Redis/rsync/FPM/AJP | `info-leak-test.md` + `ssrf-test.md` |
 
-> 知识模块路径：`.claude/skills/shared/knowledge/appsec/`。更多：`recon-methodology.md`、`audit-js-reverse-guide.md`、`ghost-bits-cast-test.md`、`打穿短表.md`
+> 知识模块路径：`E:/Agent/0x01_Skills/shared/knowledge/appsec/`。更多：`recon-methodology.md`、`js-reverse-guide.md`、`ghost-bits-cast-test.md`、`打穿短表.md`
 
 ## 🔑 打穿短表精华（认A打B）
 
@@ -87,32 +92,34 @@
 | 未授权接口 | → 枚举同前缀全部接口 → 寻找写操作(POST/PUT/DELETE) |
 | 硬编码密钥 | → 搜同类密钥(AWS/OSS/Redis) → 验证每个密钥权限范围 |
 | 竞态条件 | → 短信轰炸 → 优惠券叠加 → 0元购 → 余额溢出 |
+| 验证码与账号未绑定（A码B用/置空/回显/跳步） | → 任意注册/任意登录/任意改密三连测（一处原理三处出货） |
+| 小程序返回包带session_key | → 解密验证key → 改明文手机号重加密 → 任意用户登录/接管后台 |
+| 列表接口返回字段多于请求字段 | → 字段回拼 → 自构隐藏排序参数 → ORDER BY注入（预编译盲区） |
 | 403绕过成功 | → 路径变体穷举 → Header覆盖 → 方法切换 → 编码填充 |
 
-> 完整打穿短表见 `.claude/skills/shared/knowledge/appsec/打穿短表.md`（90+条）
+> 完整打穿短表见 `E:/Agent/0x01_Skills/shared/knowledge/appsec/打穿短表.md`（90+条）
 
 ## 📂 Skill 分类总览
 
 | 类别 | Skill | 说明 |
 |------|-------|------|
-| **安全测试** | `core-pentest-flow` | OWASP系统化渗透，主力skill，含26个脚本 |
-| | `web-vuln-hunting` | SRC漏洞挖掘，ROI驱动，深度优先 |
-| | `red-team` | 红队Kill Chain（Web RCE + AD域控） |
+| **安全测试** | `pentest-flow` | OWASP系统化渗透，主力skill，含26个脚本 |
+| | `vuln-hunting` | SRC漏洞挖掘，ROI驱动，深度优先 |
+| | `killchain` | 红队Kill Chain（Web RCE + AD域控） |
 | | `code-audit` | 白盒代码审计 |
 | | `mobile-pentest` | 移动端APK/IPA测试 |
-| **安全工具** | `redteam-arsenal` | 红队武器（免杀/Shellcode/WebShell/C2） |
-| | `shared-antidebug-breaker` | 反调试/浏览器hook调试辅助 |
-| | `audit-js-reverse` | JS逆向分析 |
+| **安全工具** | `arsenal` | 红队武器（免杀/Shellcode/WebShell/C2） |
+| | `antidebug-breaker` | 反调试/浏览器hook调试辅助 |
 | | `api-recon` | API接口收集，含6个脚本 |
-| **资产管理** | `recon-src-asset` | SRC资产收集工具包 |
-| | `recon-asset-triage` | 薄弱资产精判/打点筛选 |
+| **资产管理** | `src-asset` | SRC资产收集工具包 |
+| | `asset-triage` | 薄弱资产精判/打点筛选 |
 | **CTF/靶场** | `benchmark-orchestrator` | 腾讯Benchmark靶场管道调度 |
 | **基础设施** | `shared` | 知识库（49篇）+ 数据表 + 状态管理 |
-| | `core-auto-handoff` | 自动交接文档生成 |
+| | `auto-handoff` | 自动交接文档生成 |
 | | `report-generator` | 渗透测试报告生成 |
-| | `shared-playwright-cli` | 浏览器自动化操作 |
+| | `playwright-cli` | 浏览器自动化操作 |
 
-## 🔧 core-pentest-flow 脚本索引
+## 🔧 pentest-flow 脚本索引
 
 | 功能 | 脚本 | 用途 |
 |------|------|------|
@@ -146,17 +153,17 @@
 | | `memory.py` | 状态记忆 |
 | | `run_all.py` | 批量运行入口 |
 
-## 🗂️ 知识库索引（redteam-arsenal + redteam）
+## 🗂️ 知识库索引（arsenal + redteam）
 
 > appsec（34篇）已由上方"进站短表"索引，此处不重复。
 
-### redteam-arsenal（红队武器）
+### arsenal（红队武器）
 
 | 模块 | 路径 |
 |------|------|
-| 免杀/规避技术 | `redteam-arsenal/evasion.md` |
-| Loader设计 | `redteam-arsenal/loader-design.md` |
-| 进程注入 | `redteam-arsenal/process-injection.md` |
+| 免杀/规避技术 | `redteam/arsenal/SKILL.md` §Step 2 技术选型 |
+| Loader设计 | `redteam/arsenal/SKILL.md` §Step 2 + 模板1/2 |
+| 进程注入 | `redteam/arsenal/SKILL.md` §Step 2 + 模板3 |
 
 ### redteam（红队攻击链）
 
@@ -174,4 +181,4 @@
 | **域攻击** | 委派攻击 | `redteam/ad-attack/delegation.md` |
 | | 票据攻击 | `redteam/ad-attack/ticket.md` |
 
-> 知识库根路径：`.claude/skills/shared/knowledge/`
+> 知识库根路径：`E:/Agent/0x01_Skills/shared/knowledge/`
