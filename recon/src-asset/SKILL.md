@@ -1,6 +1,13 @@
 ---
 name: src-asset
-description: SRC(安全应急响应中心)资产收集六步管道。给定一个SRC官网/公告URL，自动完成：①资产范围解读→②公司清单(股权穿透)→③备案资产(根域名/APP/小程序)→④Web资产(Quake测绘)→⑤指纹识别(TscanPlus)→⑥汇总大表。当用户给出SRC链接并要求"跑一遍/收集资产/按流程走"时使用。
+version: 1.0
+when_to_use: SRC资产收集/信息收集/资产测绘/打点准备
+triggers:
+  - SRC
+  - 资产收集
+  - 信息收集
+  - 资产测绘
+description: SRC(安全应急响应中心)资产收集六步管道【国内SRC口径】。给定一个SRC官网/公告URL，自动完成：①资产范围解读→②公司清单(股权穿透)→③备案资产(根域名/APP/小程序)→④Web资产(Quake测绘)→⑤指纹识别(TscanPlus)→⑥汇总大表。当用户给出SRC链接并要求"跑一遍/收集资产/按流程走"时使用。
 ---
 
 # SRC 资产收集六步管道
@@ -15,6 +22,7 @@ description: SRC(安全应急响应中心)资产收集六步管道。给定一�
 > **工具包根目录**：`E:\PenTest\0x02_Tools\S_Src\A_AssetCollect\SRC资产收集工具包\`（下文 提示词/ 与 脚本/ 均指此目录下子目录；2026-11-13 自 Claude 工作区迁入）
 
 1. **凭证检查**：`python -X utf8 "E:\PenTest\0x02_Tools\S_Src\A_AssetCollect\SRC资产收集工具包\脚本\00_检查凭证.py"`
+   - 已知缺口清单（2026-11-13）：国内链 **Quake Key / 爱企查Cookie / 代理池API**；国外链 amass 各数据源 key（可选）
    - 缺失项：向用户逐项索要（解释见《首次配置_凭证说明.md》），拿到后写入对应文件，**不回显内容**
    - 全部就绪才进入①
 2. 确认工作目录结构（输出都落在工作区根目录的 步骤N输出/ 下，一个SRC一套文件）
@@ -27,7 +35,7 @@ description: SRC(安全应急响应中心)资产收集六步管道。给定一�
 | ②公司名称 | equity_recon 股权穿透（口径来自①：≥50%/全资/双阈值） | 步骤②输出/{src}_单位名称清单.xlsx | 提示词/步骤②_公司名称确认.md |
 | ③备案资产 | beian_recon 双遍网站+APP/小程序，公示域名直入，step3_merge 出种子 | 步骤③输出/{src}_备案资产清单.xlsx | 提示词/步骤③_备案信息获取.md |
 | ④Web资产 | quake_full_sweep（省积分四约束+SaaS长尾采样策略） | 步骤④输出/{src}_Web资产URL.csv | 提示词/步骤④_Web资产获取.md |
-| ⑤指纹识别 | TscanPlus v3.5.0 低频全量（切块+可断点bat）；**agent 后台会话 TscanPlus 起不来（WebView2 桌面依赖），headless 兜底用 httpx -tech-detect**（GoBin）或请用户桌面跑 bat | 步骤⑤输出/{src}_指纹识别结果.xlsx | 提示词/步骤⑤_指纹识别.md |
+| ⑤指纹识别 | TscanPlus v3.5.0 低频全量（切块+可断点bat；**patched exe 内嵌旧绝对路径 `0x01_SRC_Tools`，config 已自愈可用至 2028**）；**agent 后台会话 TscanPlus 起不来（WebView2 桌面依赖），headless 兜底用 httpx -tech-detect**（GoBin）或请用户桌面跑 bat | 步骤⑤输出/{src}_指纹识别结果.xlsx | 提示词/步骤⑤_指纹识别.md |
 | ⑥汇总大表 | 写总览配置json → step6_build_master 合并①-⑤ | 步骤⑥输出/{src}_SRC资产汇总大表.xlsx | 提示词/步骤⑥_汇总大表.md |
 
 ## 核心公式（贯穿全程）

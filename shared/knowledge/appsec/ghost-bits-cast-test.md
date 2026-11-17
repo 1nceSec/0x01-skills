@@ -180,7 +180,7 @@ Selection guidance:
 
 ## 4. DANGEROUS-BYTE TO GHOST-CHARACTER MAP
 
-Compact red-team weaponization table. For every byte the attacker actually
+Compact killchain weaponization table. For every byte the attacker actually
 needs, one verified Unicode char is given; substitute another `k` if the WAF
 later learns the example.
 

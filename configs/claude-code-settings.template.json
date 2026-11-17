@@ -1,0 +1,23 @@
+{
+  "_comment": "Claude Code 工作区 .claude/settings.json 参考：放行常用只读/测试命令与 playwright-cli。enabledPlugins 按需。",
+  "permissions": {
+    "allow": [
+      "Bash(curl.exe *)",
+      "Bash(curl *)",
+      "Bash(python *)",
+      "Bash(python -c *)",
+      "Bash(grep *)",
+      "Bash(cat *)",
+      "Bash(wc *)",
+      "Bash(rm -f *)",
+      "Bash(mkdir *)",
+      "Bash(echo *)",
+      "Bash(ls *)",
+      "Bash(dir *)",
+      "Bash(node *)",
+      "PowerShell(playwright-cli *)",
+      "PowerShell($env:PLAYWRIGHT_MCP_EXTENSION_TOKEN=*; playwright-cli *)"
+    ]
+  },
+  "enabledPlugins": {}
+}

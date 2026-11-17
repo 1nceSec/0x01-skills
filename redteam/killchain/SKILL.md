@@ -28,8 +28,8 @@ inputs_optional:
 
 | 输入类型 | 判断依据 | 执行路径 |
 |---|---|---|
-| **SRC链接/组织名** | URL含SRC/安全应急特征，或纯文本组织名 | → `Skill("src-asset")` → `Skill("asset-triage")` → P0目标作为Stage 2突破口 → Phase 0-A |
-| **原始资产表** | 用户提供域名/IP/指纹表等未经精判的资产列表 | → `Skill("asset-triage")` → P0目标作为Stage 2突破口 → Phase 0-A |
+| **SRC链接/组织名** | URL含SRC/安全应急特征，或纯文本组织名 | → `recon/src-asset/SKILL.md`（Read） → `recon/asset-triage/SKILL.md`（Read） → P0目标作为Stage 2突破口 → Phase 0-A |
+| **原始资产表** | 用户提供域名/IP/指纹表等未经精判的资产列表 | → `recon/asset-triage/SKILL.md`（Read） → P0目标作为Stage 2突破口 → Phase 0-A |
 | **脆弱资产表/打点清单** | 用户说"从打点清单继续"或提供asset-triage产出/已标注P0-P3的资产 | → P0目标作为Stage 2突破口 → Phase 0-A |
 | **指定目标** | IP/CIDR/域名/已有立足点 | → 直接 Phase 0-A |
 
@@ -43,8 +43,8 @@ AskUserQuestion({
       question: "是否使用 Burp 代理？",
       multiSelect: false,
       options: [
-        { label: "使用 Burp (Recommended)", description: "replay.py主力 + curl -x proxy辅助，流量过Burp HTTP History" },
-        { label: "不使用 Burp", description: "直接curl/Playwright发包，不走代理" }
+        { label: "不使用 (Default)", description: "默认不调用Burp，curl直连发包；任务中途需要时明确说启用即可切换" },
+        { label: "使用 Burp", description: "replay.py主力 + curl -x proxy辅助，流量过Burp HTTP History" }
       ]
     },
     {
@@ -52,8 +52,8 @@ AskUserQuestion({
       question: "是否使用 Playwright 浏览器？",
       multiSelect: false,
       options: [
-        { label: "使用 Playwright (Recommended)", description: "playwright-ext自动化浏览、功能遍历、JS审计" },
-        { label: "不使用 Playwright", description: "纯命令行测试，不启动浏览器" }
+        { label: "不使用 (Default)", description: "默认纯命令行测试，不启动浏览器；任务中途需要时明确说启用即可切换" },
+        { label: "使用 Playwright", description: "playwright-ext自动化浏览、功能遍历、JS审计" }
       ]
     },
     {
@@ -61,7 +61,7 @@ AskUserQuestion({
       question: "是否有登录测试账号？",
       multiSelect: false,
       options: [
-        { label: "无测试账号 (Recommended)", description: "未授权视角测试" },
+        { label: "无测试账号 (Default)", description: "默认未授权视角测试，优先未授权方向；账号后续提供" },
         { label: "有测试账号", description: "有登录凭证，需要提供Cookie或账号密码" }
       ]
     }
@@ -69,7 +69,8 @@ AskUserQuestion({
 })
 ```
 
-结果写入 redteam-blackboard.json `meta.tools`。用户说不用的工具**全程禁用**（含Worker）。
+结果写入 redteam-blackboard.json `meta.tools`。**默认不调用**：选"不使用"的工具默认全程不调用（含Worker），但**不是硬禁用**——任务中途用户明确要求启用时，更新 `meta.tools` 后即可调用；hook 检测到"标记不使用+实际调用"时中断向用户确认，不静默放行也不静默拒绝。
+**测试账号默认无**：优先未授权方向；任务中途用户提供账号/凭证时，写入黑板 `credentials` 并继续凭据链测试。
 
 ## 核心原则
 
@@ -88,18 +89,19 @@ AskUserQuestion({
 
 | 阶段 | 加载文件 | 触发条件 |
 |------|----------|----------|
-| 资产收集 | `Skill("src-asset")` | Phase 0-0输入为SRC链接/组织名时触发 |
-| 薄弱资产精判 | `Skill("asset-triage")` | 资产收集完成后触发 |
+| 资产收集 | `recon/src-asset/SKILL.md`（Read） | Phase 0-0输入为SRC链接/组织名时触发 |
+| 薄弱资产精判 | `recon/asset-triage/SKILL.md`（Read） | 资产收集完成后触发 |
 | Bootstrap | `shared/playbooks/bootstrap.md` | 任务启动，Read一次（黑板用redteam-blackboard.json） |
 | Kill Chain循环 | `playbooks/stages.md` | 每轮循环Read（三路径：Web W1-W4 / AD A1-A5 / K8s K1-K4 + 目标体系 + Reason-Act + OPSEC + 方向切换） |
-| 源码审计委托 | `Skill("code-audit")` | W1识别到可获取源码的框架/CMS/商业系统时触发，产出进findings作为W2 Tier 0 |
-| Web突破委托 | `Skill("pentest-flow")` | W2止损后或 `redteam-state.mjs path next` 返回 `delegate_pentest` 时触发，pentest只找入口（RCE/权限/数据），产出进findings |
+| 源码审计委托 | `audit/code-audit/SKILL.md`（Read） | W1识别到可获取源码的框架/CMS/商业系统时触发，产出进findings作为W2 Tier 0 |
+| Web突破委托 | `core/pentest-flow/SKILL.md`（Read） | W2止损后或 `redteam-state.mjs path next` 返回 `delegate_pentest` 时触发，pentest只找入口（RCE/权限/数据），产出进findings |
 | 桶接管向量 | `shared/knowledge/appsec/bucket-takeover-test.md` §9 | W1侦察发现OSS/COS/S3等云存储引用时按悬空桶检查（初始访问/供应链向量） |
 | Web打点扩面 | `shared/knowledge/appsec/param-asymmetry-fuzz.md` | W1/W2 遇登录面/接口面时：隐藏参数+ORDER BY注入+鉴权绕过变体（分号矩阵/改方法/白名单路由）+actuator与框架字典——**国内外通用手法**，红队仅取利用面，不取SRC定级 |
 | 初始凭据获取 | `shared/knowledge/appsec/logic-test.md` §六 + `wx-miniprogram-sessionkey-test.md` | W2 无弱口令突破口时：验证码族绕过/小程序三要素伪造=拿合法账号进内部系统（凭证链起点）；仅取手法，平台定级/一洞多交等SRC规则**不适用红队** |
 | K8s知识卡 | `shared/knowledge/redteam/cloud/k8s-attack.md` | K1-K4各阶段加载（入口向量/逃逸检查表/收割清单/横向） |
 | 攻击链管理 | `shared/playbooks/chain.md` | 发现可串联漏洞 / `chain next`返回非空 |
-| 状态管理 | `shared/state/redteam-state.mjs` | CLI: `init` / `obj <add\|update\|list>` / `asset <add\|update\|list>` / `cred <add\|test\|list>` / `net <add\|list>` / `path <add\|show\|next>` / `persist add` / `stage <check\|advance>` / `score` / `summary` / `bb <merge\|observe\|plan\|log>` / `trace <write\|list\|search>` |
+| 状态管理 | `shared/state/redteam-state.mjs` | CLI: `init` / `obj <add\|update\|list>` / `asset <add\|update\|list>` / `cred <add\|test\|list>` / `net <add\|list>` / `path <add\|show\|next>` / `persist add` / `stage <check\|advance>` / `score` / `summary` / `bb <merge\|observe\|plan\|log>` / `trace <write\|list\|search>` / `gate` |
+| 阶段收口门禁 | `shared/state/redteam-state.mjs gate` | Stage切换前/Merge后/写报告前必跑：PASS才进下一Stage（含治理五项preflight硬阻断） |
 | 公共表 | `shared/common-tables.md` | Bootstrap时加载（工具表+进站短表+打穿短表） |
 | Worker模板 | `shared/worker-prompt-template.md` | Spawn Worker时填充变量注入 |
 | 安全红线 | `shared/references/safety-boundaries.md` | 按需引用 |

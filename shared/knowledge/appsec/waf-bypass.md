@@ -2,6 +2,14 @@
 
 # WAF Bypass Techniques — Evasion Playbook
 
+## 0. CORE MENTAL MODEL — 绕过的元原则
+
+**一切 WAF 绕过 = 在 WAF 与源站之间制造"认知差"：保持载荷语义不变，改变表现形式。**
+
+- WAF 的三种检测模式（正则/语义/AI）各有盲区；主流仍以正则为主，正则匹配的是**字面形式**而非**真实语义**
+- 遇到拦截时先问：**WAF 看到的内容和源站看到的一样吗？**（解析差异 > 规则匹配——解析差异绕过更稳定、更难修）
+- 升级顺序从最简单的变形开始（内联注释/大小写/空格替换/单字符编码），很多 WAF 连基础变形都没覆盖
+- WAF 规则是黑名单思维：攻击者只需找到一个 WAF 不认识、但源站/浏览器认识的形式
 
 ## 1. PHASE 0 — IDENTIFY THE WAF
 
@@ -109,6 +117,7 @@ Use case: WAF whitelists internal IPs or has different rule sets per source.
 | Dot segments | `/./admin` or `/../target/admin` | WAF sees different path than app |
 | Double slash | `//admin` | Some normalizers collapse, WAFs may not |
 | URL encoding path | `/%61dmin` | WAF sees encoded, app decodes |
+| First-char encoding only | `/PSEMHUB/` → `/%50SEMHUB/` | Single-char encode: WAF compares raw path pre-decode, app decodes then routes (CVE-2026-35273 PeopleSoft, ShinyHunters 2026 — one character defeated string-based WAF rules entirely) |
 | Null byte in path | `/admin%00.jpg` | Legacy: app truncates at null, WAF sees .jpg |
 | Backslash (IIS) | `/admin\..\/secret` | IIS treats `\` as `/` |
 | Trailing dot/space | `/admin.` or `/admin%20` | OS-level normalization (Windows) |
@@ -126,6 +135,8 @@ Switch:   Content-Type: text/xml  → WAF expects XML, payload in different form
 ```
 
 **Trick**: If app accepts both JSON and form-urlencoded, use JSON — WAFs often have weaker JSON inspection rules.
+
+**WAFFLED research data**: >90% of sites accept `application/x-www-form-urlencoded` and `multipart/form-data` interchangeably. WAF often fully parses only ONE of them — switching Content-Type makes the payload vanish from WAF's view. Parsing-difference fuzzing confirmed 1,207 bypasses across 5 major WAFs this way.
 
 ### 2.8 Multipart Boundary Abuse
 
@@ -167,6 +178,7 @@ SELECT\t*\tFROM\tusers
 | `eval()` | `Function('code')()`, `setTimeout('code',0)` |
 | `' OR '1'='1` | `' OR 1-- -`, `'\|\|'1` |
 | `SLEEP(5)` | `BENCHMARK(5000000,SHA1('x'))`, `pg_sleep(5)` |
+| `UNION SELECT`（单次替换型WAF） | **双写** `UNIUNIONON SELSELECTECT` — WAF 替换一次后剩下的正好是关键字 |
 
 ---
 
@@ -253,6 +265,7 @@ Payload blocked by WAF?
 4. **CDN caching**: If the WAF is at CDN level, cached responses bypass WAF on subsequent requests. Poison cache with clean request, exploit cache.
 5. **Origin server direct access**: If you find the origin IP behind CDN/WAF, connect directly — WAF is bypassed completely.
 6. **Multipart file upload fields**: WAFs often skip inspection of file content in multipart uploads — embed payload in filename or file content if reflected.
+7. **AI WAF 对抗**：ML/LLM 模型 WAF 提升了门槛但未消除绕过——两条路：① 对抗样本（载荷加微小扰动使模型分类为正常，2025-2026 研究 RADAGAS 对 LLM 型 WAF 成功率可达 92%）；② 分布外输入（全新编码方式/罕见协议特性落在训练分布之外）。攻防本质仍是认知差：模型认为"正常"，源站认为是攻击。
 
 ---
 

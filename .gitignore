@@ -2,3 +2,11 @@
 logs/
 sessions/
 storages/
+.playwright-cli/
+__pycache__/
+.zcode/
+chunk_httpx.log
+finger.json
+hv_urls.txt
+nul
+AGENTS.security.md

@@ -17,8 +17,8 @@ AskUserQuestion({
       question: "是否使用 Burp 代理？",
       multiSelect: false,
       options: [
-        { label: "使用 Burp (Recommended)", description: "replay.py主力 + curl -x proxy辅助，流量过Burp HTTP History" },
-        { label: "不使用 Burp", description: "直接curl/Playwright发包，不走代理" }
+        { label: "不使用 (Default)", description: "默认不调用Burp，curl直连发包；任务中途需要时明确说启用即可切换" },
+        { label: "使用 Burp", description: "replay.py主力 + curl -x proxy辅助，流量过Burp HTTP History" }
       ]
     },
     {
@@ -26,8 +26,8 @@ AskUserQuestion({
       question: "是否使用 Playwright 浏览器？",
       multiSelect: false,
       options: [
-        { label: "使用 Playwright (Recommended)", description: "playwright-ext自动化浏览、功能遍历、JS审计" },
-        { label: "不使用 Playwright", description: "纯命令行测试，不启动浏览器" }
+        { label: "不使用 (Default)", description: "默认纯命令行测试，不启动浏览器；任务中途需要时明确说启用即可切换" },
+        { label: "使用 Playwright", description: "playwright-ext自动化浏览、功能遍历、JS审计" }
       ]
     },
     {
@@ -35,7 +35,7 @@ AskUserQuestion({
       question: "是否有登录测试账号？",
       multiSelect: false,
       options: [
-        { label: "无测试账号 (Recommended)", description: "未授权视角测试" },
+        { label: "无测试账号 (Default)", description: "默认未授权视角测试，优先未授权方向；账号后续提供" },
         { label: "有测试账号", description: "有登录凭证，需要提供Cookie或账号密码" }
       ]
     }
@@ -43,7 +43,8 @@ AskUserQuestion({
 })
 ```
 
-用户选择后写入黑板 `meta.tools`。说不用的工具**整个任务全程禁用**（含所有Worker）。
+用户选择后写入黑板 `meta.tools`。**默认不调用**：选"不使用"的工具默认全程不调用（含所有Worker），但**不是硬禁用**——任务中途用户明确要求启用时，更新 `meta.tools` 后即可调用；hook 检测到"标记不使用+实际调用"时中断向用户确认，不静默放行也不静默拒绝。
+**测试账号默认无**：优先未授权方向（A_unauth/M_info 格子）；任务中途用户提供账号时，更新黑板 meta（cookie/cookie_b）并补做 0-D 权限基线测绘，把 B_idor 相关 pending 格子回填。
 
 ## 0-B: 基础侦察
 
@@ -129,7 +130,7 @@ node shared/state/pentest-state.mjs init
 - [ ] 参数文件已写入
 - [ ] coverage checklist已生成（Phase 0.5）
 
-全部通过 → 进入 Phase 1（广度扫描），Read 各 skill 自己的 loop/stages playbook 开始循环。
+全部通过 → 进入 Phase 1（广度扫描），Read `shared/playbooks/loop.md`（通用骨架，含 route check/gate）开始循环；pentest-flow 模式额外 Read `core/pentest-flow/playbooks/loop.md`（两阶段细节），killchain 模式 Read `redteam/killchain/playbooks/stages.md`。
 
 ## 0-F: 生成 Coverage Checklist（Phase 0.5）
 

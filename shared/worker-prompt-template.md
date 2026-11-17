@@ -1,4 +1,4 @@
-# Worker Prompt Template v8.0
+# Worker Prompt Template v8.2
 
 > 主Agent在spawn Worker时使用。变量替换后注入Worker。
 > v8.0变更：通用化支持四模式（渗透测试/漏洞挖掘/红队评估/CTF benchmark）。

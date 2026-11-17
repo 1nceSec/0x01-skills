@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// redteam-state.mjs — 红队评估状态管理 v1.0
+// redteam-state.mjs — 红队评估状态管理 v1.1（+gate 阶段收口机械门禁）
 // 目标驱动 + Kill Chain 阶段制。与 pentest-state.mjs 互不干扰。
 // 用法：node redteam-state.mjs <command> [subcommand] [args...]
 
@@ -9,15 +9,23 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const WORK_DIR = process.env.REDTEAM_WORKDIR || 'E:\\Agent\\Claude';
-const BLACKBOARD = join(WORK_DIR, 'blackboard.json');
-const CHANGELOG = join(WORK_DIR, 'blackboard-changelog.jsonl');
-const TRACES_DIR = join(WORK_DIR, 'worker-traces');
+const BLACKBOARD = join(WORK_DIR, 'redteam-blackboard.json');
+const CHANGELOG = join(WORK_DIR, 'redteam-blackboard-changelog.jsonl');
+const TRACES_DIR = join(WORK_DIR, 'redteam-worker-traces');
 
 // ─── 工具函数 ───
 
 function loadBB() {
-  if (!existsSync(BLACKBOARD)) { console.error('blackboard.json不存在，先执行 init'); process.exit(1); }
-  return JSON.parse(readFileSync(BLACKBOARD, 'utf8'));
+  if (!existsSync(BLACKBOARD)) { console.error('redteam-blackboard.json不存在，先执行 init'); process.exit(1); }
+  const bb = JSON.parse(readFileSync(BLACKBOARD, 'utf8'));
+  // 兼容旧版/异构黑板：补齐缺失分区，避免 summary 等命令崩溃
+  const schema = JSON.parse(readFileSync(join(__dirname, '..', '..', 'redteam', 'killchain', 'redteam-blackboard-schema.json'), 'utf8'));
+  const defaults = JSON.parse(JSON.stringify(schema.init_template));
+  for (const key of Object.keys(defaults)) {
+    if (bb[key] === undefined) bb[key] = defaults[key];
+  }
+  bb.meta = { ...defaults.meta, ...bb.meta };
+  return bb;
 }
 function saveBB(bb) { writeFileSync(BLACKBOARD, JSON.stringify(bb, null, 2), 'utf8'); }
 function logChange(source, changes) {
@@ -29,12 +37,13 @@ function traceDir() { if (!existsSync(TRACES_DIR)) mkdirSync(TRACES_DIR, { recur
 // ─── Init: 初始化黑板 ───
 
 function init(targetScope, roe, branch) {
-  const schema = JSON.parse(readFileSync(join(__dirname, '..', '..', 'red-team', 'redteam-blackboard-schema.json'), 'utf8'));
+  const schema = JSON.parse(readFileSync(join(__dirname, '..', '..', 'redteam', 'killchain', 'redteam-blackboard-schema.json'), 'utf8'));
   const bb = JSON.parse(JSON.stringify(schema.init_template));
   bb.meta.target_scope = targetScope || '';
   bb.meta.roe = roe || '';
   bb.meta.branch = branch || 'web';
   bb.meta.start_time = new Date().toISOString();
+  if (!existsSync(WORK_DIR)) mkdirSync(WORK_DIR, { recursive: true });
   saveBB(bb);
   traceDir();
   console.log(`红队黑板已初始化 — scope: ${targetScope || '(空)'}, branch: ${branch || 'web'}`);
@@ -749,10 +758,42 @@ function main() {
         default: console.error('用法: trace <write|list|search>'); process.exit(1);
       }
       break;
+    case 'gate':
+      gate();
+      break;
     default:
-      console.error('用法: redteam-state.mjs <init|obj|asset|cred|net|path|persist|stage|score|summary|bb|trace>');
+      console.error('用法: redteam-state.mjs <init|obj|asset|cred|net|path|persist|stage|score|summary|bb|trace|gate>');
       process.exit(1);
   }
+}
+
+// ─── Gate: 阶段收口机械门禁（Stage切换前/Merge后/写报告前必跑） ───
+
+function gate() {
+  const bb = loadBB();
+  const checks = [];
+  const chk = (name, ok, detail, level = 'fail') => checks.push({ name, status: ok ? 'pass' : level, detail: detail || '' });
+
+  chk('meta.target_scope', !!bb.meta?.target_scope, bb.meta?.target_scope || '为空 → init 未传 target_scope');
+  chk('meta.roe', !!bb.meta?.roe, bb.meta?.roe ? 'ROE 已登记' : 'ROE 为空 → 红队评估必须有 ROE 才可行动');
+
+  // 治理规则门禁（硬阻断：五项自检不全禁止对目标行动）
+  const pf = bb.meta?.preflight?.governance || {};
+  const pfOk = pf.loaded === true && pf.scope && pf.stop_conditions && pf.credential_handling && pf.sensitive_scenarios && pf.red_lines;
+  chk('preflight.governance', pfOk,
+    pfOk ? '治理自检五项已确认（授权范围/停止条件/凭据处理/敏感场景/红线动作）'
+         : '治理规则自检未完成或五项不全（scope/stop_conditions/credential_handling/sensitive_scenarios/red_lines）→ 禁止对目标行动');
+
+  chk('meta.current_stage', !!bb.meta?.current_stage, bb.meta?.current_stage || '未设置（应为 recon 起）');
+  chk('assets', (bb.assets || []).length > 0, `${(bb.assets || []).length} 个资产（0 → Bootstrap/侦察未落黑板）`, 'warn');
+
+  const fails = checks.filter(c => c.status === 'fail');
+  console.log(JSON.stringify({ pass: fails.length === 0, failed: fails.map(c => c.name), checks }, null, 2));
+  if (fails.length > 0) {
+    console.error(`gate: FAIL（${fails.length} 项未过）——禁止进入下一 Stage`);
+    process.exit(1);
+  }
+  console.error(`gate: PASS（${checks.filter(c => c.status === 'warn').length} 项警告）`);
 }
 
 main();

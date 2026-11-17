@@ -110,10 +110,10 @@ ssh -i /tmp/.k root@192.168.110.15 'id'    # uid=0(root) → 下一台到手
 
 - SSH 链：id_rsa + known_hosts 名单逐台试（运维常全内网同一把钥匙）
 - 集群链：kubelet pki → 本节点 kubectl 操作；admin token → 控制双集群
-- 云链：AK/SK → 云控制台 → 云管/VPN（汇入 red-team 目标体系 centralised_system）
+- 云链：AK/SK → 云控制台 → 云管/VPN（汇入 killchain 目标体系 centralised_system）
 - 拿新主机后回 A2 提权→导凭证→再横向（Linux 主机同时参考 `redteam/privesc/linux.md`）
 
-## 9. 得分映射（red-team 目标体系）
+## 9. 得分映射（killchain 目标体系）
 
 | 成果 | category | 权重 |
 |------|----------|------|

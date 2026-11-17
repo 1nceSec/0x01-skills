@@ -7,6 +7,24 @@ allowed-tools: Bash(playwright-cli:*) Bash(npx playwright:*) Bash(npx --no-insta
 
 # Browser Automation with playwright-cli
 
+## ⛔ 浏览器操作红线（2026-11-15 更新，最高优先级）
+
+- **一切浏览器自动化只准用 `playwright-cli attach` 接管用户本地原生浏览器**：
+  - **国内SRC用 Edge（扩展方式，已验证可用）**：
+    ```bash
+    export PLAYWRIGHT_MCP_EXTENSION_TOKEN=Vg2KJlOShL2ekErn5AYeJ7ociH3RY9e4LVOW8RKg980
+    playwright-cli attach --extension=msedge
+    playwright-cli -s=msedge <command>   # 后续所有命令带 -s=msedge
+    ```
+    用户 Edge 已装 Playwright 扩展，token 即上面的 env 值。
+  - **国外SRC用 Chrome**：`playwright-cli attach --extension=chrome`（同理）。
+  - `attach --cdp=msedge` 依赖浏览器开启远程调试端口（DevToolsActivePort），用户日常 Edge 未开启时**必然失败**，不要浪费时间尝试；也不要用 computer-use 去 GUI 摸索浏览器。
+- **禁止**用 Python Playwright / `launch_persistent_context` / 临时 user-data-dir / 命令行自启任何浏览器实例——避免污染用户环境与登录态。
+- **禁止**全局按进程名杀浏览器（如 `taskkill //IM msedge.exe`）——会误杀用户正在使用的窗口；结束会话用 `playwright-cli detach`（保留浏览器进程）。
+- 本文件其余章节（open/goto 等通用语法）仅在 attach 已建立会话后适用；`playwright-cli open` 默认无头新实例，**不得用于 SRC 测试目标**。
+- 与路由技能 `~/.zcode/skills/pentest/SKILL.md` 浏览器红线同源；冲突时以治理规则 `E:\Agent\0x00_Governance\AGENTS.md` 为最终权威。
+- 纯 HTTP 可完成的工作（API 探测、SQL注入、CVE 复现、端口服务）直接用 curl/python，不必动浏览器。
+
 ## Quick start
 
 ```bash

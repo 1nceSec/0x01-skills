@@ -28,21 +28,23 @@ node shared/state/pentest-state.mjs chain show
 ### 链式利用执行规则
 
 1. **只执行 `chain next` 返回的步骤**——前置未满足的不跳步
-2. 每步执行前过 AGENTS.md 门禁（删除类禁止、数据量限制等）
+2. 每步执行前过 E:/Agent/0x00_Governance/AGENTS.md 门禁（删除类禁止、数据量限制等）
 3. 执行结果记录 trace：`pentest-state trace write main '{"chain_step":"<id>","result":"..."}'`
 4. 成功 → `chain done <id>` → 检查是否解锁下游
 5. 失败 → 不标记done，写入 failure_records，考虑替代路径
 6. 替代路径：同一个 yields 目标可以有多条路径，任一成功即解锁下游
 
-### 常见攻击链模式
+### 常见攻击链模式（治理合规口径：证明能力即停，深入利用一律禁止）
 
-| 链路 | 步骤 |
+> 权威规则 `E:\Agent\0x00_Governance\AGENTS.md`：验证即止 / AK-SK获取即提交不使用 / 禁WebShell / 禁内网与云元数据。下表"链"指**评估可升级路径并写入报告**，不是继续执行。
+
+| 链路 | 证明边界（到此即停） |
 |---|---|
-| SSRF→云 | 发现SSRF → 打元数据(169.254.169.254) → 获取AKSK → 列S3桶 |
-| SQLi→提权 | 注入点 → 读用户表 → 管理员凭据 → 后台RCE |
-| IDOR→接管 | 越权读 → 获取他人token/密码重置链接 → 账户接管 |
-| 上传→RCE | 上传绕过 → WebShell落地 → 命令执行 |
-| JWT→伪造 | 弱密钥/alg:none → 伪造管理员token → 全功能越权 |
+| SSRF→云 | 仅回连验证地址(src-ssrf.bytedance.net/ssrf)证明请求能力 → 提交；**禁**内网/云元数据探测，AK/SK若有泄露线索直接写报告由平台验证 |
+| SQLi→提权 | 仅版本/库名证明深度 → 提交；**禁**读表/列/数据、堆叠、INTO OUTFILE/UDF |
+| IDOR→接管 | 证明读取他人数据能力（累计≤5组）→ 提交；**禁**批量枚举、改密、接管会话 |
+| 上传→RCE | 证明文件落地+可访问/可执行能力即停 → 删除验证文件 → 提交；**禁**WebShell/后门/持久化 |
+| JWT→伪造 | 证明可伪造签名即停 → 提交；**禁**用伪造token访问管理接口或获取数据 |
 
 发现漏洞后对照上表和打穿短表（Read `shared/common-tables.md`），有匹配就 `chain add`。
 

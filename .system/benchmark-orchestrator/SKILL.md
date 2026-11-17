@@ -286,7 +286,7 @@ function normalize_and_submit(ch, raw_flag):
 
 ```
 function build_worker_prompt(ch, max_steps, retry):
-    template = Read(".claude/skills/benchmark-orchestrator/worker-prompt.md")
+    template = Read("<本SKILL.md所在目录>/worker-prompt.md")
     knowledge_cards = select_knowledge_cards(ch)
 
     previous_attempt = ""
@@ -305,7 +305,7 @@ function build_worker_prompt(ch, max_steps, retry):
         ${CORRECT_FLAGS}: ch.correct_flag_count,
         ${PREVIOUS_ATTEMPT}: previous_attempt,
         ${KNOWLEDGE_CARDS}: knowledge_cards_content,
-        ${WORK_DIR}: "E:\\Agent\\Claude",
+        ${WORK_DIR}: "<当前会话工作目录>/benchmark",
         ${WORKER_ID}: "w-{phase}-{index}",
     })
 ```
@@ -314,7 +314,7 @@ function build_worker_prompt(ch, max_steps, retry):
 
 ```
 function select_knowledge_cards(ch):
-    base = ".claude/skills/benchmark-orchestrator/knowledge/"
+    base = "<本SKILL.md所在目录>/knowledge/"
     category_map = {
         "web":     [base+"ctf-web-manual.md", base+"cve-web-common.md"],
         "reverse": [base+"ctf-reverse.md"],

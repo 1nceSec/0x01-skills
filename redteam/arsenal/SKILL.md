@@ -30,16 +30,16 @@ inputs_optional:
 ## 核心原则
 
 1. **完整可用**：输出的代码必须能编译运行，不是伪代码或片段
-2. **知识卡驱动**：按任务类型加载 `redteam/arsenal/*` 知识卡作为技术参考
+2. **知识卡驱动**：按任务类型加载 `shared/knowledge/arsenal/*` 知识卡作为技术参考
 3. **分层构建**：Loader = 加密层 + 存储层 + 执行层 + 反检测层，逐层实现
 4. **测试验证**：写完后给出编译命令和测试方法
 
 ## 知识卡加载
 
-触发时按 `knowledge-routing.yaml` 的 `arsenal.phases.build` 加载：
-- `redteam/arsenal/evasion.md` — 免杀与EDR绕过技术速查
-- `redteam/arsenal/loader-design.md` — Shellcode加载器设计速查
-- `redteam/arsenal/process-injection.md` — 进程注入技术速查
+触发时按 `knowledge-routing.yaml` 的 `arsenal.phases.build` 加载（路径相对 shared/knowledge/）：
+- `shared/knowledge/arsenal/evasion.md` — 免杀与EDR绕过技术速查
+- `shared/knowledge/arsenal/loader-design.md` — Shellcode加载器设计速查
+- `shared/knowledge/arsenal/process-injection.md` — 进程注入技术速查
 
 ## 执行流程
 

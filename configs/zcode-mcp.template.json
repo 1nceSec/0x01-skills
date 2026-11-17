@@ -1,0 +1,21 @@
+{
+  "_comment": "合并进 C:/Users/<用户名>/.zcode/cli/config.json 的 mcp 段。burp 需 Burp Pro 的 MCP 上游监听 127.0.0.1:9876，token 填 Burp 侧生成的值；antidebug-breaker 需单独安装 AntiDebug_Breaker-Agent，args 指向其 mcp/src/index.js。两者均可选，删除即禁用。",
+  "mcp": {
+    "servers": {
+      "burp": {
+        "type": "sse",
+        "url": "http://127.0.0.1:9876/",
+        "headers": {
+          "Authorization": "Bearer <Burp-MCP生成的token>"
+        }
+      },
+      "antidebug-breaker": {
+        "command": "node",
+        "args": [
+          "<AntiDebug_Breaker-Agent安装目录>/mcp/src/index.js"
+        ]
+      }
+    },
+    "disabled": {}
+  }
+}

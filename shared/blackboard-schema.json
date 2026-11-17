@@ -1,5 +1,5 @@
 {
-  "$comment": "pentest/vuln-hunting 通用黑板schema",
+  "$comment": "pentest/vuln-hunting 通用黑板schema v2.3（2026-11-15：finding补confidence/suspect_reason，intent补claimed_by/resolved_by/evidence_refs/target/vuln_type，decision_log补evidence_refs，meta补preflight/modules_loaded）",
   "init_template": {
     "meta": {
       "target": "",
@@ -16,6 +16,17 @@
       },
       "coverage": {},
       "tools": { "burp": null, "playwright": null },
+      "modules_loaded": [],
+      "preflight": {
+        "governance": {
+          "loaded": false,
+          "scope": "",
+          "stop_conditions": "",
+          "credential_handling": "",
+          "sensitive_scenarios": "",
+          "red_lines": ""
+        }
+      },
       "phase": "breadth",
       "phase_meanings": {
         "breadth": "Phase1广度扫描：逐格快速探测，每格≤2次请求",
@@ -23,6 +34,7 @@
       }
     },
     "attack_surfaces": [],
+    "facts": [],
     "pending_hypotheses": [],
     "verified_findings": [],
     "exploits": [],
@@ -51,16 +63,23 @@
       "curl_poc": "",
       "response_evidence": "",
       "owasp_category": "A01-A10",
-      "verified": false
+      "verified": false,
+      "confidence": "confirmed|suspected",
+      "suspect_reason": "confidence=suspected 时必填"
     },
     "intent": {
       "id": "i-1",
       "description": "",
       "attack_type": "",
+      "target": "",
+      "vuln_type": "",
       "target_surfaces": [],
       "knowledge_modules": [],
       "priority": "high|medium|low",
       "status": "pending|claimed|completed|dead",
+      "claimed_by": "main|worker-1|...",
+      "resolved_by": "",
+      "evidence_refs": ["引用已存在的fact id，必填"],
       "source_finding": ""
     },
     "failure_record": {
@@ -75,11 +94,11 @@
       "example": {
         "/api/users": {
           "B_idor": {"status": "tested", "note": ""},
-          "B_unauth": {"status": "pending", "note": ""},
+          "A_unauth": {"status": "pending", "note": ""},
           "C_sqli": {"status": "blocked", "note": "WAF拦截单引号，返回403"},
           "D_xss": {"status": "skip", "note": "纯JSON接口无反射点"},
           "E_ssrf": {"status": "interesting", "note": "url参数存在，返回超时差异"},
-          "J_mass_assign": {"status": "finding", "note": "f-3"}
+          "J_logic": {"status": "finding", "note": "f-3"}
         }
       },
       "states": "pending|tested|finding|blocked|interesting|parked|skip",
@@ -100,7 +119,8 @@
       "strategy": "",
       "next_actions": [],
       "dead_ends": [],
-      "open_hypotheses": []
+      "open_hypotheses": [],
+      "evidence_refs": ["引用fact id，因果引用"]
     }
   }
 }

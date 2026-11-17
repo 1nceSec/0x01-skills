@@ -1,7 +1,7 @@
 # Kill Chain 阶段定义 + 执行循环（红队评估）
 
 > 本文件由 SKILL.md 路由加载。Bootstrap 完成后进入 Stage 1，每轮循环 Read 一次。
-> v2.1: Kill Chain 三路径 — 外网Web红队 + 内网AD红队 + 云原生K8s红队，按目标环境自动路由。
+> v2.2: 与SKILL.md版本对齐（2026-11-15）。v2.1: Kill Chain 三路径 — 外网Web红队 + 内网AD红队 + 云原生K8s红队，按目标环境自动路由。
 
 ## 分支路由
 
@@ -42,7 +42,7 @@
 6. **源码获取判断**（识别到框架/CMS/商业系统后立即执行）：
    - 免费渠道（直接执行）：GitHub/Gitee搜索 | .git/.svn/.DS_Store泄露探测 | 备份文件探测(.bak/.zip/.rar/.tar.gz) | heapdump/actuator泄露 | Web Archive历史快照 | 官方试用版/演示版
    - 付费渠道（找到后报用户确认）：淘宝/闲鱼搜商业系统源码 | 源码交易站(互站网等) | Telegram群/论坛泄露版
-   - 获取到源码 → 记入 `source_intel[]` → 委托 `Skill("code-audit")` 审计 → 产出进findings作为W2 Tier 0输入
+   - 获取到源码 → 记入 `source_intel[]` → 委托 `audit/code-audit/SKILL.md`（Read） 审计 → 产出进findings作为W2 Tier 0输入
 
 **产出**：技术栈判定 → 按快速决策树确定Tier 1/2/3测试顺序 + 悬空桶清单（如有）+ 源码审计结果（如有）
 
@@ -69,13 +69,14 @@
 
 **Tier 3 — 链式利用**（有线索时针对性）：
 - 认证绕过→后台→RCE | JS泄露凭证→接管 | 日志投毒→LFI→RCE
-- SSRF→云元数据→AK/SK | 原型污染→RCE | heapdump→凭证→数据
+- 原型污染→RCE | heapdump→凭证→数据
+- ⛔ SSRF 仅回连验证地址（src-ssrf.bytedance.net/ssrf）证明能力即停；**禁**打云元数据/内网段——治理权威 `E:\Agent\0x00_Governance\AGENTS.md`（ROE 明确允许内网动作时按 ROE 执行并留痕）
 
 **止损**：单向量≤5种bypass无突破→标记parked，推进下一个
 
 **pentest委托**（红队专用快速模式）：
 - 触发：`redteam-state.mjs path next` 返回 `delegate_pentest` 时，或手工判断需要系统化覆盖测试
-- 调用：`Skill("pentest-flow")`，传入目标URL+已有Cookie/Token
+- 调用：`core/pentest-flow/SKILL.md`（Read），传入目标URL+已有Cookie/Token
 - 约束：pentest只负责找入口（RCE/权限/数据），不做完整覆盖测试
 - 返回：confirmed findings列表（漏洞类型+PoC+可利用性评估）
 - 红队消费结果：取RCE/权限类finding → 进W3深入利用；取数据类finding → 进W4目标达成
@@ -286,10 +287,11 @@ Worker规则：独立 `worker-{id}.json`，发现一律 `pending`，主Agent Mer
 
 **Merge流程**（Worker结果回收时）：
 1. Worker结果通过`bb merge`合并到blackboard（facts/intents/hints追加，findings按id更新）
-2. `intent validate` — evidence_refs必须引用已有facts
+2. `pentest-state.mjs intent validate`（注意：intent命令在 pentest-state.mjs，redteam-state.mjs 无此命令） — evidence_refs必须引用已有facts
 3. `bb observe` — 检测矛盾/盲点/陈旧/孤立fact/重复失败，有问题记入decision_log处理
 4. `bb plan` — 根据黑板变更自动建议下一步action，按priority执行
 5. 验证门：基础门（所有发现必过）→ High/Critical需Grounding+Negation
+6. **阶段收口 gate**：`node shared/state/redteam-state.mjs gate` — PASS才允许 Stage 切换/写报告（FAIL 时按 failed 列表修复后重跑）
 
 **失败归因**：L1工具错→修正 | L2凭证失效→刷新 | L3被WAF拦→bypass | L4路径不通→新路径 | L5阶段阻塞→请求协助（L3×3→升L5）
 

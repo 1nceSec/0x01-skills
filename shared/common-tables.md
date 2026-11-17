@@ -16,7 +16,7 @@
 - `onescan.py` — 常规敏感路径扫描
 - `recon.py` — 侦察辅助
 
-**知识库**：`E:/Agent/0x01_Skills/shared/knowledge/appsec/` 目录下34个漏洞类型模块，按需加载。
+**知识库**：`E:/Agent/0x01_Skills/shared/knowledge/appsec/` 目录下38个漏洞类型模块，按需加载。
 
 ## 📋 进站短表（特征→模块映射）
 
@@ -60,7 +60,7 @@
 | 微信小程序（jscode2session / session_key / encryptedData / iv） | `wx-miniprogram-sessionkey-test.md`（三要素伪造手机号任意登录+app.json路由绕过） |
 | 有抽奖/答题/盲盒/内置游戏/签到积分 | `logic-test.md` §九（结果参数重置）+ `race-condition-test.md` |
 | 有优惠券/会员充值/付费解锁/二维码 | `logic-test.md` §七/§八/§十一（券细分+支付细节+二维码攻击面） |
-| 返回401/403 | 先分清：登录页→找业务面；API 403→现场打path/method/头（`param-asymmetry-fuzz.md` §三变体清单） |
+| 返回401/403 | **强制**：先跑 `core/pentest-flow/bypass_403.py <url>`（机械变体矩阵，自动关账，gate 硬检查未关账事件）→ HIT取证 / 无果再深入 `param-asymmetry-fuzz.md` §三 + `waf-bypass.md`；登录页403→找业务面 |
 | 公网Redis/rsync/FPM/AJP | `info-leak-test.md` + `ssrf-test.md` |
 
 > 知识模块路径：`E:/Agent/0x01_Skills/shared/knowledge/appsec/`。更多：`recon-methodology.md`、`js-reverse-guide.md`、`ghost-bits-cast-test.md`、`打穿短表.md`
@@ -73,25 +73,25 @@
 | 密文id + JS有公钥 | 加密相邻数字替换 → 出他人数据 |
 | 列表按tenantId过滤 | 租户字段试0/-1/空 → 出他租户 |
 | 前端写死appId+appKey | 不登录带钥打业务表 |
-| 云开发/SSRF到元数据 | 不登录打元数据 → AK/SK |
+| 云开发/SSRF到元数据信号 | 仅证明SSRF可达性（回连验证地址）→ 提交；禁取AK/SK（治理红线） |
 | 管理后台SSO壳 | POST默认admin/123456 |
 | SSO壳未收敛（首访不跳SSO、本地登录页/接口仍暴露） | 跟进SSO域找第二套登录口 → 参数字典弱口令出JWT → 控制台注入token接管后台 → 多角色用户名碰撞横向接管 → 垂直越权 |
 | Node __proto__+EJS/Pug | 污染outputFunctionName → RCE |
 | 二维码登录有token | 不登录拿token构造登录URL |
 | OAuth白名单有跳转 | 参数转发带出code → 1-click接管 |
-| SSRF确认 | → 云元数据(169.254.169.254) → AK/SK → S3列桶 → 内网横向 |
-| IDOR确认 | → 批量枚举评估规模 → 垂直越权尝试管理员 |
-| SQLi确认 | → 库名/表名证明深度 → 堆叠/写文件/UDF |
-| JWT弱密钥确认 | → 伪造admin token → 全管理接口 |
-| XSS存储确认 | → Cookie窃取PoC → 管理员后台 → 接管 |
-| 上传成功 | → 可访问？→ 可执行？→ RCE？→ STS通配覆盖？ |
+| SSRF确认 | → 回连验证地址(src-ssrf.bytedance.net/ssrf)证明能力 → 提交；禁元数据/内网/AK/SK |
+| IDOR确认 | → 证明读取他人数据能力（累计≤5组）→ 垂直越权尝试 → 提交；禁批量枚举/接管 |
+| SQLi确认 | → 版本/库名证明深度 → 提交；禁读表/列/数据、堆叠、写文件/UDF |
+| JWT弱密钥确认 | → 证明可伪造即停 → 提交；禁用伪造token访问管理接口 |
+| XSS存储确认 | → 无害标记存储回显证明即停 → 提交；禁Cookie窃取外带/接管 |
+| 上传成功 | → 可访问？→ 可执行？证明即停 → 删验证文件；禁WebShell/后门 |
 | 信息泄露 | → Actuator→heapdump→密码 | Swagger→全接口→逐个测 | .env→凭证 |
 | 敏感目录存在(/files/ /upload/) | → 二级枚举(站名缩写+后缀) → 备份包/源码/配置 |
 | JS加密调用(CryptoJS/AES/SM4) | → chunk全量覆盖 → 密钥来源追踪 → 解密凭证/伪造请求 |
 | 任意文件读 | → /etc/passwd → 配置文件 → 数据库凭证 → 连接DB |
 | 未授权接口 | → 枚举同前缀全部接口 → 寻找写操作(POST/PUT/DELETE) |
 | 硬编码密钥 | → 搜同类密钥(AWS/OSS/Redis) → 验证每个密钥权限范围 |
-| 竞态条件 | → 短信轰炸 → 优惠券叠加 → 0元购 → 余额溢出 |
+| 竞态条件 | → 并发重放证明状态异常即停 → 提交；禁短信轰炸/实际下单/真实资金操作 |
 | 验证码与账号未绑定（A码B用/置空/回显/跳步） | → 任意注册/任意登录/任意改密三连测（一处原理三处出货） |
 | 小程序返回包带session_key | → 解密验证key → 改明文手机号重加密 → 任意用户登录/接管后台 |
 | 列表接口返回字段多于请求字段 | → 字段回拼 → 自构隐藏排序参数 → ORDER BY注入（预编译盲区） |
@@ -103,7 +103,7 @@
 
 | 类别 | Skill | 说明 |
 |------|-------|------|
-| **安全测试** | `pentest-flow` | OWASP系统化渗透，主力skill，含26个脚本 |
+| **安全测试** | `pentest-flow` | OWASP系统化渗透，主力skill，含29个脚本 |
 | | `vuln-hunting` | SRC漏洞挖掘，ROI驱动，深度优先 |
 | | `killchain` | 红队Kill Chain（Web RCE + AD域控） |
 | | `code-audit` | 白盒代码审计 |
@@ -114,7 +114,7 @@
 | **资产管理** | `src-asset` | SRC资产收集工具包 |
 | | `asset-triage` | 薄弱资产精判/打点筛选 |
 | **CTF/靶场** | `benchmark-orchestrator` | 腾讯Benchmark靶场管道调度 |
-| **基础设施** | `shared` | 知识库（49篇）+ 数据表 + 状态管理 |
+| **基础设施** | `shared` | 知识库（58篇）+ 数据表 + 状态管理 |
 | | `auto-handoff` | 自动交接文档生成 |
 | | `report-generator` | 渗透测试报告生成 |
 | | `playwright-cli` | 浏览器自动化操作 |
@@ -161,9 +161,9 @@
 
 | 模块 | 路径 |
 |------|------|
-| 免杀/规避技术 | `redteam/arsenal/SKILL.md` §Step 2 技术选型 |
-| Loader设计 | `redteam/arsenal/SKILL.md` §Step 2 + 模板1/2 |
-| 进程注入 | `redteam/arsenal/SKILL.md` §Step 2 + 模板3 |
+| 免杀/规避技术 | `E:/Agent/0x01_Skills/redteam/arsenal/SKILL.md` §Step 2 技术选型（仓库根，非 shared/knowledge） |
+| Loader设计 | `E:/Agent/0x01_Skills/redteam/arsenal/SKILL.md` §Step 2 + 模板1/2 |
+| 进程注入 | `E:/Agent/0x01_Skills/redteam/arsenal/SKILL.md` §Step 2 + 模板3 |
 
 ### redteam（红队攻击链）
 

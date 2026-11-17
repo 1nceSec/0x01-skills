@@ -4,7 +4,7 @@
 
 
 > **云存储变种**：桶被删名释放、JS/配置/CDN回源/CNAME 残留引用（不依赖 DNS 挂点），
-> 含国内云厂商指纹（OSS/COS/BOS）与 red-team 攻击用法 → 见 `bucket-takeover-test.md`。
+> 含国内云厂商指纹（OSS/COS/BOS）与 killchain 攻击用法 → 见 `bucket-takeover-test.md`。
 
 ## 1. CORE CONCEPT
 

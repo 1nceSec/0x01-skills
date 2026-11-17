@@ -122,7 +122,7 @@ function validateLFI(f, ev) {
 
 function validateUnauth(f, ev) {
   const pass = [], fail = [];
-  if (/无.*cookie|无.*token|不带.*认证|without.*auth|no.*session/i.test(ev))
+  if (/无.*cookie|无.*token|不带.*认证|未携带.*认证|未带.*凭证|无.*authorization|未登录|匿名|without.*auth|no.*session/i.test(ev))
     pass.push('请求未携带认证信息');
   else fail.push('未证明请求不含认证凭证');
   if (/200|数据|records|列表|用户/i.test(ev)) pass.push('未认证请求返回了业务数据');

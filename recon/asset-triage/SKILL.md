@@ -14,7 +14,7 @@ inputs_required:
 inputs_optional:
   - name: 项目名称（用于输出文件命名，默认'目标'）
 ---
-> 开工前先跑 pentest-flow Phase 0-0 自检。
+> 独立使用时：开工前先跑 pentest-flow Phase 0-0 自检；**由 vuln-hunting/killchain 编排加载时跳过**（治理自检已在主流程执行，结果在 blackboard.preflight.governance）。
 
 # 薄弱资产识别 Skill v1.0
 
@@ -126,18 +126,18 @@ python -X utf8 build_final.py {name}
 ## 与下游Skill联动
 
 ### → vuln-hunting
-打点清单按P0→P1排序，逐个作为 vuln-hunting 的 target URL 输入。
+打点清单按P0→P1排序，逐个作为 vuln-hunting（Read `E:/Agent/0x01_Skills/pentest/vuln-hunting/SKILL.md`）的 target URL 输入。
 P0/P1的渗透方向直接转化为 vuln-hunting 的初始 Intent。
 
 ### → killchain
-P0目标作为 killchain Stage 2 的候选突破口。
+P0目标作为 killchain（Read `E:/Agent/0x01_Skills/redteam/killchain/SKILL.md`）Stage 2 的候选突破口。
 打点清单中的技术栈/版本信息传递为先验知识。
 
 ## 硬规则
 
 - **只做识别与GET级验证**：不利用漏洞、不注册账号、不发POST（除非用户指示）
 - **每条判定必须引用证据**：无证据只能标【待确认】
-- **403不丢弃**：标注"绕过候选"；**403但有favicon图标** → 大概率存在Web系统（纯拒绝页无图标），优先级提升为打点候选，首个验证动作=目录字典扫描找登录页
+- **403不丢弃**：标注"绕过候选"；**403但有favicon图标** → 大概率存在Web系统（纯拒绝页无图标），优先级提升为打点候选，首个验证动作=目录字典扫描找登录页。**进入目标后新发现的 403 目录/功能点同样不丢弃：第一动作=跑 `core/pentest-flow/bypass_403.py`（路径前缀/后缀/Header/Method 全矩阵），禁止手动零星尝试后放弃；HIT 必做语义复核（200+403文案=登录墙、fallback页≠绕过）**
 - **单批≤50条**：AI精判超50条分批处理
 - 遵守 CLAUDE.md §3 上下文控制规范
 

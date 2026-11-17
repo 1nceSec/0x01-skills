@@ -1,5 +1,6 @@
 ---
 name: report-generator
+version: 1.0
 description: 写报告/生成报告/出报告/report/渗透报告/漏洞报告：汇总会话内已确认漏洞、PoC、攻击链，按 SRC 标准格式输出完整报告；支持增量更新与多格式输出（docx/pdf/md）。
 when_to_use: 写报告/生成报告/出报告/report/渗透报告/漏洞报告
 triggers:
@@ -28,7 +29,7 @@ inputs_optional:
 
 ## 1. 数据来源（按优先级）
 
-1. **Burp Repeater** — 已命名的VULN{n}条目（`proxy_history`查询带VULN前缀的）
+1. **Burp Repeater** — 已命名的VULN{n}条目（`proxy_history`查询带VULN前缀的；**仅 Burp 启用时可用**——Phase 0-A 默认不启用 Burp 时，VULN 条目改为记录在黑板 verified_findings + 阶段 Markdown，见第3条）
 2. **会话上下文** — 当前对话中已确认的ConfirmedVulnerability节点
 3. **Markdown暂存** — 测试过程中写的阶段性.md文件
 4. **Burp Scanner Issues** — `scanner_task_issues` 输出（如跑过scanner）

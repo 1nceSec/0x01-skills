@@ -1,6 +1,12 @@
 ---
 name: bugbounty-triage
-description: 国外SRC(Bug Bounty)关键/薄弱资产识别筛选定位（asset triage）：输入 bugbounty-asset 产出的资产大表（live_hosts/httpx指纹/端口/JS产物/截图），五类信号分级粗筛→主动验证→AI精判，输出 P0–P3 打点清单。用户要求"精判/筛选关键资产/定位薄弱资产/挑高价值目标/triage"时使用；对标国内 asset-triage。
+version: 1.0
+when_to_use: bug bounty资产精判/薄弱资产筛选/挑高价值目标（国外）
+triggers:
+  - bug bounty精判
+  - 国外triage
+  - 薄弱资产
+description: 国外SRC(Bug Bounty)关键/薄弱资产识别筛选定位（asset triage）【国外BB口径，分级同构于国内 asset-triage、条目按领域替换】：输入 bugbounty-asset 产出的资产大表（live_hosts/httpx指纹/端口/JS产物/截图），五类信号分级粗筛→主动验证→AI精判，输出 P0–P3 打点清单。用户要求"精判/筛选关键资产/定位薄弱资产/挑高价值目标/triage"时使用。
 ---
 
 # Bug Bounty（国外 SRC）关键脆弱资产定位管道
@@ -58,7 +64,7 @@ httpx `-tech-detect` / WhatWeb 指纹出来后对照版本：
 - juicy_params 密度（`redirect=|url=|file=|path=|token=|id=|user=`）高的资产加权；
   历史与当前 JS bundle 端点 diff 出"前端已删后端还在"的端点 = P1
 
-### 分级口径（与国内 asset-triage 对齐）
+### 分级口径（同构于国内 asset-triage：P0-P3四级框架对齐，条目按领域替换，非逐字相同）
 
 | 级别 | 判定 |
 |---|---|
@@ -69,9 +75,17 @@ httpx `-tech-detect` / WhatWeb 指纹出来后对照版本：
 
 ## 主动验证（scope 允许的主动活动范围内）
 
-1. nuclei 面板/暴露类模板对 P0-P1 候选确认：`nuclei -l p01_targets.txt -t exposures/ -t panels/ -severity medium,high,critical`
+> **⛔ Policy 门禁（硬规则，2026-11-15；优先级高于本文件任何步骤）**
+> 与国内 asset-triage 硬规则的差异为**有意设计**：国内线禁主动扫描（平台规则），国外线允许有限主动验证——但前提是 program policy 明确允许。执行本节前逐条核对：
+> 1. **policy 禁止主动扫描的 program**：本节（nuclei/截图/认证实测）**全部跳过**，只保留五类信号粗筛 + AI 精判——P0-P3 分级不受影响，只影响验证手段
+> 2. **速率/并发**：按 program policy 与平台条款执行；policy 未提及时默认保守（串行、单线程、禁爆破类模板、nuclei 加 `-rl 30 -c 5`）
+> 3. **敏感动作**（对登录态资产批量截图、幽灵端点带认证实测）：policy 未涵盖 → 先向用户二次确认再执行
+> 4. **数据上限对标国内硬规则**：判定引用证据最小化、单批 ≤50 条、不批量拉取业务数据
+> 5. 全部主动活动留痕：目标/时间/请求次数/结果记入交接文档，供平台核验
+
+1. nuclei 面板/暴露类模板对 P0-P1 候选确认：`nuclei -l p01_targets.txt -t exposures/ -t panels/ -severity medium,high,critical -rl 30 -c 5`（policy 允许时）
 2. **视觉侦察**（z0id 方法）：`gowitness report generate` 或 EyeWitness（自动出 HTML 报告）全量截图，P0-P1 候选逐张人工看——截图是"500 个子域里最快锁定登录页/默认安装页/老组件 banner"的手段；z0id 的 grep 流：`cat *.txt | sort -u | grep --color "error"` 对全资产元数据表按关键词过筛
-3. 幽灵端点带认证实测（老端点常 200）
+3. 幽灵端点带认证实测（老端点常 200；policy 与用户二次确认后）
 
 ## AI 精判（对标国内线 AI 精判步骤）
 
@@ -105,8 +119,8 @@ AI 精判的攻击路径假设表、建议的人工验证顺序、以及"转人�
 - **通用手法模块**（国内外通用，直接复用国内线知识库）：
   `shared/knowledge/appsec/param-asymmetry-fuzz.md` — 列表接口字段回拼/隐藏参数/ORDER BY 注入/接口联想 fuzz/鉴权绕过变体（HackerOne 报告同样吃这类发现，payload 通用）
   `shared/knowledge/appsec/logic-test.md` §六~§九 — 验证码族/支付/竞态/游戏结果重置手法层通用；**仅跳过**其国内平台定级规则（条数定级/短信轰炸收录/一洞多交），定级按各平台 policy + VRT
-- **产品审计模式（国外同样适用）**：`Skill("code-audit")` product 模式（Phase P）——拿商业产品安装包审计的流程国内外通用；国外出口为 ZDI/厂商 PSIRT/CVE 披露（评级按 CVSS/目标 policy），仅不套用 P.3 的国内 SRC 定级口径
-- **不适用国外线**：`wx-miniprogram-sessionkey-test.md`（微信生态）、`core/report-generator/references/src-platform-grading.md`（国内 SRC 定级表）——国外报告按 impact 写作（该文件 §三 的三视角写法可参考，规则表不可套用）
+- **产品审计模式（国外同样适用）**：`audit/code-audit/SKILL.md`（Read） product 模式（Phase P）——拿商业产品安装包审计的流程国内外通用；国外出口为 ZDI/厂商 PSIRT/CVE 披露（评级按 CVSS/目标 policy），仅不套用 P.3 的国内 SRC 定级口径
+- **不适用国外线**：`shared/knowledge/appsec/wx-miniprogram-sessionkey-test.md`（微信生态）、`core/report-generator/references/src-platform-grading.md`（国内 SRC 定级表）——国外报告按 impact 写作（该文件 §三 的三视角写法可参考，规则表不可套用）
 
 ## 对照国内
 

@@ -20,8 +20,8 @@ triggers:
 
 1. **用户主动触发**：说"交接"、"handoff"、"写交接文档"
 2. **PreCompact hook**：auto-compact 前 hook 确定性注入 `[AUTO-HANDOFF]` 到 AI 上下文
-3. **全局规则触发（CLAUDE.md §3）**：工具计数 hook 达到阈值时自动触发，不限于skill模式
-4. **Skill内部触发**：core/pentest-flow/vuln-hunting等skill的轮次检查点触发
+3. **全局规则触发**：工具计数 hook 达到阈值时自动触发，不限于skill模式
+4. **技能内部触发**：core/pentest-flow、pentest/vuln-hunting 等技能的轮次检查点触发（Read 本 SKILL.md 执行交接）
 
 ## 交接流程
 

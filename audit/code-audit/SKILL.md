@@ -48,7 +48,7 @@ inputs_optional:
    - `src` — 配合vuln-hunting，聚焦高价值可利用漏洞
    - `product` — 通用型产品漏洞挖掘（拿到商业产品安装包审计；**审计流程国内外通用**，出口国内=厂商SRC/CNVD通用型证书、国外=ZDI/厂商PSIRT/CVE披露，见 Phase P）
 4. **活目标确认** — 有URL则Phase 4实际验证，无则给验证方案
-5. **工具确认** — 有活目标时按CLAUDE.md§1.6确认Burp/Playwright
+5. **工具确认** — 有活目标时按工具确认三问（同 pentest-flow Phase 0-A）确认Burp/Playwright
 6. **范围确认**:
    - 全量 / 指定模块 / 指定漏洞类型
    - 代码量>15k行 → 建议聚焦高风险模块
@@ -56,7 +56,7 @@ inputs_optional:
 
 ### 输出目录
 
-审计产物统一放项目temp目录（按CLAUDE.md§1.10），包括:
+审计产物统一放项目temp目录，包括:
 - `_audit_context.md` — 攻击面+架构理解
 - `_findings.md` — 已确认漏洞
 - `_verify_checklist.md` — 黑盒验证清单（pentest/src模式）
@@ -348,7 +348,7 @@ Java 17 / Spring Boot 3.x / MyBatis / MySQL
 ## 注意事项
 
 - 硬编码凭证只记录位置，不输出实际值
-- 发现的漏洞如涉及增删改接口，遵循CLAUDE.md§2.2和 E:/Agent/0x00_Governance/AGENTS.md 对应规则
+- 发现的漏洞如涉及增删改接口，遵循 E:/Agent/0x00_Governance/AGENTS.md 对应规则
 - pentest/src模式下， E:/Agent/0x00_Governance/AGENTS.md 全部规则生效（SQLi≤3条、越权≤5组硬停止等）
 - standalone模式不受 E:/Agent/0x00_Governance/AGENTS.md 约束（客户给的源码包，无活目标）
 

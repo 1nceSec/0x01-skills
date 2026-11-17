@@ -1,6 +1,8 @@
-# knowledge-routing.yaml — 确定性知识卡加载路由
+# knowledge-routing.yaml — 确定性知识卡加载路由（唯一机器可读路由源）
 # LLM不做调度决策，按模式+阶段自动加载对应知识卡
 # 路径相对于 shared/knowledge/
+# signals 段由 pentest-state.mjs route scan/check 消费（情境信号→知识模块机械映射）；
+# shared/common-tables.md 进站短表是同一映射的人工对照表，两者不一致时以本文件为准并同步修正短表。
 
 modules:
   vuln-hunting:
@@ -24,6 +26,7 @@ modules:
         - appsec/idor-test.md
         - appsec/oauth-jwt-test.md
         - appsec/csrf-test.md
+        - appsec/wx-miniprogram-sessionkey-test.md
       client-side:
         - appsec/xss-test.md
         - appsec/open-redirect-test.md
@@ -34,6 +37,7 @@ modules:
       logic:
         - appsec/logic-test.md
         - appsec/race-condition-test.md
+        - appsec/business-lab-flag-range.md
       advanced:
         - appsec/http-smuggling-test.md
         - appsec/http-host-header-test.md
@@ -49,6 +53,9 @@ modules:
       bypass:
         - appsec/waf-bypass.md
         - appsec/打穿短表.md
+      advanced-plus:
+        - appsec/param-asymmetry-fuzz.md
+        - appsec/component-cve.md
       report: []
 
   pentest:
@@ -87,7 +94,7 @@ modules:
       persist:
         - redteam/persist/techniques.md
 
-  red-team:
+  killchain:
     description: "红队评估模式 — Kill Chain（外网Web + 内网AD + 云原生K8s）"
     phases:
       # 分支A：外网Web红队
@@ -96,7 +103,7 @@ modules:
         - appsec/recon-methodology.md
         - appsec/info-leak-test.md
         - appsec/js-reverse-guide.md
-        - appsec/bucket-takeover-test.md   # 悬空桶引用=初始访问/供应链向量（§9 red-team用法）
+        - appsec/bucket-takeover-test.md   # 悬空桶引用=初始访问/供应链向量（§9 killchain用法）
       web-exploit:
         - redteam/exploit/web-rce-vectors.md
         - redteam/exploit/middleware-java.md
@@ -147,29 +154,112 @@ modules:
       test:
         - arsenal/evasion.md
 
+# 情境信号→知识模块机械映射（pentest-state.mjs route scan/check 消费）
+# 信号由脚本从 blackboard 的 attack_surfaces（url/params）与 facts（vuln_type/description）按关键词确定性推导；
+# 短表同源：shared/common-tables.md 进站短表。新增情境先加这里，再同步短表。
+signals:
+  user-system:                      # 注册/登录/用户体系
+    - appsec/authbypass-test.md
+    - appsec/idor-test.md
+  search-params:                    # 搜索/筛选/查询/排序参数
+    - appsec/injection-test.md
+  file-upload:                      # 上传接口/文件参数
+    - appsec/file-upload-test.md
+  sts-object-storage:               # STS签名/对象存储/OSS
+    - appsec/file-upload-test.md
+  url-fetch-param:                  # URL/图片预览/回调/内容请求参数
+    - appsec/ssrf-test.md
+  rich-text-editor:                 # 评论/留言/富文本编辑器
+    - appsec/xss-test.md
+  payment-coupon:                   # 支付/优惠券/积分/库存
+    - appsec/logic-test.md
+    - appsec/race-condition-test.md
+    - appsec/business-lab-flag-range.md
+  lottery-checkin:                  # 抽奖/答题/盲盒/签到
+    - appsec/logic-test.md
+    - appsec/race-condition-test.md
+  detail-response-heavy:            # 返回字段多/详情接口
+    - appsec/info-leak-test.md
+  graphql:
+    - appsec/graphql-test.md
+  oauth-jwt-saml:
+    - appsec/oauth-jwt-test.md
+  websocket:
+    - appsec/websocket-test.md
+  api-gateway-microservice:
+    - appsec/api-gateway-test.md
+  cdn-cache:
+    - appsec/cache-poisoning-test.md
+  ai-llm-agent:
+    - appsec/agent-tool-exec-test.md
+  cloud-ide:
+    - appsec/cloud-ide-codex-rce-chain.md
+  reverse-proxy:                    # 前后端分离/反代
+    - appsec/http-smuggling-test.md
+  waf-blocked:
+    - appsec/waf-bypass.md
+  java-middleware:                  # Java中间件/反序列化信号
+    - appsec/deserialization-test.md
+    - appsec/jndi-injection-test.md
+  el-expression:                    # EL/SpEL/OGNL
+    - appsec/el-injection-test.md
+  nodejs-backend:
+    - appsec/prototype-pollution-test.md
+  host-header:                      # Host头/密码重置投毒
+    - appsec/http-host-header-test.md
+  path-file-param:                  # 路径/下载/文件名参数
+    - appsec/path-traversal-lfi-test.md
+  xml-parse:
+    - appsec/xxe-test.md
+  cname-anomaly:
+    - appsec/subdomain-takeover-test.md
+    - appsec/bucket-takeover-test.md
+  open-redirect-param:
+    - appsec/open-redirect-test.md
+  php-weak-type:
+    - appsec/type-juggling-test.md
+  scm-leak:                         # .git/.svn/源码泄露
+    - appsec/insecure-scm-test.md
+  state-change-write:
+    - appsec/csrf-test.md
+  multi-tenant-saas:
+    - appsec/authbypass-test.md
+    - appsec/idor-test.md
+  sso-shell:                        # 未收敛SSO壳/第二套本地认证
+    - appsec/authbypass-test.md
+  param-asymmetry:                  # 请求字段少返回字段多/403接口扩面
+    - appsec/param-asymmetry-fuzz.md
+  wx-miniprogram:
+    - appsec/wx-miniprogram-sessionkey-test.md
+  public-service-port:              # 公网Redis/rsync/FPM/AJP
+    - appsec/info-leak-test.md
+    - appsec/ssrf-test.md
+  component-fingerprint:            # 中间件/框架指纹命中
+    - appsec/component-cve.md
+
 # 跨模块加载规则
 cross-loading:
-  red-team.initial-access:
+  killchain.web-recon:          # initial-access 已更名：killchain 阶段名以 phases 段为准
     from: pentest.web-exploit
   pentest.lateral:
     optional:
       - arsenal/evasion.md
 
 # benchmark专用路由（CTF按题目类别加载）
-# 路径相对于 skills/ 目录（兄弟skill）
+# 路径相对于技能库根（E:\Agent\0x01_Skills）；benchmark-orchestrator 位于 .system/ 下
 # benchmark-orchestrator/SKILL.md 有自己的 select_knowledge_cards()，此处为参考索引
 benchmark:
   web:
-    - ../benchmark-orchestrator/knowledge/cve-web-common.md
-    - ../benchmark-orchestrator/knowledge/ctf-web-manual.md
+    - .system/benchmark-orchestrator/knowledge/cve-web-common.md
+    - .system/benchmark-orchestrator/knowledge/ctf-web-manual.md
   reverse:
-    - ../benchmark-orchestrator/knowledge/ctf-reverse.md
+    - .system/benchmark-orchestrator/knowledge/ctf-reverse.md
   pwn:
-    - ../benchmark-orchestrator/knowledge/ctf-pwn.md
+    - .system/benchmark-orchestrator/knowledge/ctf-pwn.md
   crypto:
-    - ../benchmark-orchestrator/knowledge/ctf-crypto.md
+    - .system/benchmark-orchestrator/knowledge/ctf-crypto.md
   misc:
-    - ../benchmark-orchestrator/knowledge/ctf-misc.md
+    - .system/benchmark-orchestrator/knowledge/ctf-misc.md
   conditional:
-    - ../benchmark-orchestrator/knowledge/cve-flask-jwt.md    # flask/jwt
-    - ../benchmark-orchestrator/knowledge/cve-langflow-rce.md # langflow
+    - .system/benchmark-orchestrator/knowledge/cve-flask-jwt.md    # flask/jwt
+    - .system/benchmark-orchestrator/knowledge/cve-langflow-rce.md # langflow
