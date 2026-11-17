@@ -1,6 +1,7 @@
 # DEPLOY — 新机器部署指南
 
-> 目标：在新电脑上从零还原完整模式（技能库 + Harness + Benchmark 跑分管道）。
+> 目标：在新电脑上从零还原完整模式——**五个业务模式**（渗透测试 / 漏洞挖掘 / 代码审计 / 红队评估 / Benchmark 跑分）+ 安全 Harness + 共享支撑资产。
+> 模式 = 带完整 workflow 的运行预设（persona + 阶段流程 + Gate + 状态 + Worker 协议），宿主只是载体。
 > 主线宿主：**ZCode Desktop**；备选宿主：**Claude Code CLI**（§4）。
 > 基准环境（源机器实测）：Windows 10/11 · Node v24 · Python 3.12 · Git。
 
@@ -17,6 +18,18 @@
 | playwright-cli | `@playwright/cli@0.1.22` | 推荐 | 浏览器自动化（§2.4） |
 | Burp Suite Pro | 任意 | 可选 | burp MCP 上游（§2.5） |
 | AntiDebug_Breaker-Agent | 3.x | 可选 | JS 反调试 MCP 上游（§2.5，**不随本仓库分发**） |
+
+## 1.5 五个业务模式 → 仓库路径对照
+
+| 业务模式 | 路径 | 触发词 | 关键支撑资产 |
+|---|---|---|---|
+| 渗透测试 | `core/pentest-flow/` v8.2 | 渗透测试 / pentest | python 工具链（先 `pip install -r core/pentest-flow/requirements.txt`）+ `shared/state/pentest-state.mjs` |
+| 漏洞挖掘 | `pentest/vuln-hunting/` | 漏洞挖掘 / SRC / 挖洞 | `shared/knowledge/` 知识卡 |
+| 代码审计 | `audit/code-audit/` | 代码审计 / 白盒 | `references/frameworks|languages/` |
+| 红队评估 | `redteam/killchain/` | 红队 / 攻防演练 | `shared/state/redteam-state.mjs` + blackboard schema |
+| Benchmark 跑分 | `.system/benchmark-orchestrator/` v2.1 | benchmark / tsec / 跑分 | `worker-prompt.md` + `knowledge/` + `benchmark-state-schema.json`（§3） |
+
+> 五个模式共享 `shared/` 支撑资产与 `Skill_Index.md` 路由——**整个仓库必须完整保留，不能只拷模式目录**。
 
 ---
 
@@ -105,16 +118,24 @@ ZCode MCP 配置位于 `C:/Users/<用户名>/.zcode/cli/config.json` 的 `mcp.se
 
 ---
 
-## 4. Claude Code 备选部署
+## 4. Claude Code 备选部署（五模式全套）
 
 1. 工作区建议沿用 `E:\Agent\Claude\`（或任意目录；orchestrator 的 WORK_DIR 已参数化为"当前会话工作目录/benchmark"）；
-2. 把管道放进 CC 技能目录：
+2. **同样先整仓 clone 到 `E:\Agent\0x01_Skills`**（五个模式的 SKILL.md 相互引用 `shared/` 支撑资产，仓库必须完整在位）；
+3. 把五个模式的技能目录放进 CC 技能注册目录（目录名 = SKILL.md frontmatter 的 name）：
    ```bash
-   cp -r "E:/Agent/0x01_Skills/.system/benchmark-orchestrator" \
-         "<CC工作区>/.claude/skills/benchmark-orchestrator"
+   CC="<CC工作区>/.claude/skills"
+   cp -r "E:/Agent/0x01_Skills/core/pentest-flow"            "$CC/pentest-flow"
+   cp -r "E:/Agent/0x01_Skills/pentest/vuln-hunting"          "$CC/vuln-hunting"
+   cp -r "E:/Agent/0x01_Skills/audit/code-audit"              "$CC/code-audit"
+   cp -r "E:/Agent/0x01_Skills/redteam/killchain"             "$CC/killchain"
+   cp -r "E:/Agent/0x01_Skills/.system/benchmark-orchestrator" "$CC/benchmark-orchestrator"
+   pip install -r "E:/Agent/0x01_Skills/core/pentest-flow/requirements.txt"
    ```
-3. Harness：把 `AGENTS.md` 放 CC 工作区根（或按你的全局规则挂载）；权限参考 [configs/claude-code-settings.template.json](configs/claude-code-settings.template.json)；
-4. 源机器的全局 `E:\Agent\CLAUDE.md`（个人偏好配置）**不随本仓库分发**，按需自建。
+   > 技能正文里引用的 `shared/state/*.mjs`、`shared/knowledge/` 按**仓库路径** Read，不要拷进 .claude/skills（避免两份漂移）。
+   > 源机器 CC 工作区里的 `pentest-ai-driven v8.1` 是旧版本，新机一律用仓内 `pentest-flow v8.2`。
+4. Harness：把 `AGENTS.md` 放 CC 工作区根（或按你的全局规则挂载）；权限参考 [configs/claude-code-settings.template.json](configs/claude-code-settings.template.json)；
+5. 源机器的全局 `E:\Agent\CLAUDE.md`（个人偏好配置）**不随本仓库分发**，按需自建。
 
 ---
 

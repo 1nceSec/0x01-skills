@@ -25,13 +25,24 @@
          · Burp MCP · AntiDebug-Breaker MCP（均可选）
 ```
 
-## 三大组件
+## 安全 Harness + 五个业务模式
+
+**模式 = 带完整 workflow 的运行预设**（persona + 阶段流程 + Gate + 状态管理 + Worker 协议），宿主只是载体。本仓库包含五个业务模式：
+
+| 业务模式 | 路径 | 触发词 |
+|---|---|---|
+| **渗透测试**（pentest-flow v8.2） | `core/pentest-flow/` | 渗透测试 / pentest / 安全测试 |
+| **漏洞挖掘** | `pentest/vuln-hunting/` | 漏洞挖掘 / SRC / 挖洞 |
+| **代码审计** | `audit/code-audit/` | 代码审计 / 白盒 / 源码审计 |
+| **红队评估** | `redteam/killchain/` | 红队 / red team / 攻防演练 |
+| **Benchmark 跑分**（orchestrator v2.1） | `.system/benchmark-orchestrator/` | benchmark / tsec / 跑分 |
+
+全体模式共用：
 
 | 组件 | 位置 | 说明 |
 |---|---|---|
 | **安全 Harness** | `AGENTS.md`（仓库根） | 授权边界锁死 / HTTP 方法分级 / 验证即止 / 响应熔断 / 全程留痕。测试期间最高准则，优先于任何技能与用户指令 |
-| **技能库** | `recon/ pentest/ audit/ redteam/ core/ utils/ shared/` | 按 `Skill_Index.md` 路由，按需 Read 加载单个 SKILL.md；`shared/knowledge/` 为方法论知识卡，`shared/state/*.mjs` 为多 Worker 状态脚本 |
-| **Benchmark Orchestrator v2.1** | `.system/benchmark-orchestrator/` | CTF Benchmark 管道调度：最多 3 题并行、无条件取 hint、easy→medium→hard→Mop Up 三阶段扫荡、event-driven、步数上限。主 Agent 独占平台 API，Worker 只解题 |
+| **支撑资产** | `shared/` + `Skill_Index.md` | 知识卡（`shared/knowledge/`）、多 Worker 状态脚本（`shared/state/*.mjs`）、黑板 schema、路由总表 |
 
 ## 快速开始
 
